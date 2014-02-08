@@ -1,0 +1,13 @@
+{
+  "name": "libMVC",
+  "description": "Lib MVC for NodeJS",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.x",
+    "ejs": "~0.8.5",
+    "lodash": "~2.4.1",
+    "waterline": "~0.9.11",
+    "sails-memory": "~0.9.1"
+  }
+}
