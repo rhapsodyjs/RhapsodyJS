@@ -4,7 +4,7 @@ module.exports = function(root) {
     config: {
       db: require(root + '/api/config/database')
     },
-    rootPath: root,
+    root: root,
 
     defaults: require(root + '/api/config/defaults'),
 
@@ -17,4 +17,4 @@ module.exports = function(root) {
       return require(root + '/models/' + modelName);
     }
   };
-}
+};

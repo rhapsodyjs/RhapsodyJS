@@ -1,4 +1,6 @@
 var MainController = {
+  mainView: 'index',
+  
   views: {
 
     index: 'index.html',
