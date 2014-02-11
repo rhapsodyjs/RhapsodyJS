@@ -4,7 +4,7 @@ var UsersController = {
   views: {
     index: function(req, res) {
 
-      var User = rhapsody.requireModel('User');
+      var User = Rhapsody.requireModel('User');
 
       User.find({}, function foundUsers(err, users) {
 
@@ -23,7 +23,7 @@ var UsersController = {
       params: [':age'],
 
       action: function(req, res) {
-        var User = rhapsody.requireModel('User');
+        var User = Rhapsody.requireModel('User');
 
         User.find({age: req.params.age}, function foundUsers(err, user) {
           if(err) {
@@ -42,7 +42,7 @@ var UsersController = {
         age: req.query.age
       };
 
-      var User = rhapsody.requireModel('User');
+      var User = Rhapsody.requireModel('User');
 
       var newUSer = new User(userData);
       newUSer.save(function (err) {

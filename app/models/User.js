@@ -7,4 +7,4 @@ var User = {
 	}
 };
 
-module.exports = rhapsody.newModel('User', User);
+module.exports = Rhapsody.newModel('User', User);
