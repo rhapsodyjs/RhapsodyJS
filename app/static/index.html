@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>First Backbone test</title>
+	<script src="js/jquery.js"></script>
+	<script src="js/underscore.js"></script>
+	<script src="js/backbone.js"></script>
+
+	<script>
+	var UserModel,
+		UserView;
+
+	$(function() {
+		UserModel = Backbone.Model.extend({
+			idAttribute: '_id',
+			defaults: {
+				name: 'Nameless',
+				age: 0
+			},
+			urlRoot: '/data/User'
+		});
+
+		var newUser = new UserModel();
+		newUser.save();
+
+	});
+
+	</script>
+
+</head>
+<body>
+
+
+
+</body>
+</html>
