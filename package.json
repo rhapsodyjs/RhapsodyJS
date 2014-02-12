@@ -7,7 +7,6 @@
     "express": "3.x",
     "ejs": "~0.8.5",
     "lodash": "~2.4.1",
-    "waterline": "~0.9.11",
-    "sails-memory": "~0.9.1"
+    "mongoose": "~3.8.6"
   }
 }
