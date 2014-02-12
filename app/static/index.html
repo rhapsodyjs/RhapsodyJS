@@ -20,8 +20,16 @@
 			urlRoot: '/data/User'
 		});
 
-		var newUser = new UserModel();
-		newUser.save();
+    // var newUser = new UserModel({_id: '52f64f756dc38be8134a9b19'});
+		var newUser = new UserModel({_id: '52f64f756dc38be8134a9b18'});
+		newUser.fetch({
+      success: function() {
+        alert(newUser.get('name'));
+      },
+      error: function() {
+        alert('User can\'t be found.')
+      }
+    });
 
 	});
 
