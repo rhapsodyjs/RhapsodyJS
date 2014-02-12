@@ -1,3 +1,3 @@
 var rhapsody = require('../lib')(__dirname);
 
-rhapsody.listen(4242);
+rhapsody.open(4242);
