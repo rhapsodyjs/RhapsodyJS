@@ -1,6 +1,9 @@
 var Comment = {
 	attributes: {
-		text: String
+		text: {
+      type: String,
+      default: 'Empty comment'
+    },
 	},
 
 	sharedMethods: {

@@ -1,6 +1,9 @@
 var Post = {
 	attributes: {
-    title: String,
+    title: {
+      type: String,
+      default: 'Empty title'
+    },
 		text: String
 	},
 
