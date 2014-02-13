@@ -8,7 +8,8 @@
 
 	<script>
 	var UserModel,
-		UserView;
+		  UserView,
+      CommentModel;
 
 	$(function() {
 		UserModel = Backbone.Model.extend({
@@ -20,8 +21,20 @@
 			urlRoot: '/data/User'
 		});
 
-	    // var newUser = new UserModel({_id: '52f64f756dc38be8134a9b19'});
-	    var newUser = new UserModel();
+    CommentModel = Backbone.Model.extend({
+      idAttribute: '_id',
+      defaults: {
+        title: 'Title',
+        text: 'Text'
+      },
+      urlRoot: '/data/Comment'
+    });
+
+    var newComment = new CommentModel();
+    newComment.save();
+
+	    // var newUser = new UserModel({_id: '52fcca91c8c7b2fc0e2d50bf'});
+	    // var newUser = new UserModel();
 			// var newUser = new UserModel({_id: '52f64f756dc38be8134a9b18'});
 		// newUser.fetch({
 	 //      success: function() {
@@ -32,7 +45,7 @@
 	 //      }
 	    // });
 	    
-	    newUser.save();
+	    // newUser.destroy();
 
 	});
 
