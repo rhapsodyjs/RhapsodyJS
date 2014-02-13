@@ -14,22 +14,25 @@
 		UserModel = Backbone.Model.extend({
 			idAttribute: '_id',
 			defaults: {
-				name: 'Nameless',
-				age: 0
+				name: 'Name',
+				age: -3
 			},
 			urlRoot: '/data/User'
 		});
 
-    var newUser = new UserModel({_id: '52f64f756dc38be8134a9b19'});
-		// var newUser = new UserModel({_id: '52f64f756dc38be8134a9b18'});
-		newUser.fetch({
-      success: function() {
-        alert(newUser.get('name'));
-      },
-      error: function() {
-        alert('User can\'t be found.')
-      }
-    });
+	    // var newUser = new UserModel({_id: '52f64f756dc38be8134a9b19'});
+	    var newUser = new UserModel();
+			// var newUser = new UserModel({_id: '52f64f756dc38be8134a9b18'});
+		// newUser.fetch({
+	 //      success: function() {
+	 //        alert(newUser.get('name'));
+	 //      },
+	 //      error: function() {
+	 //        alert('User can\'t be found.')
+	 //      }
+	    // });
+	    
+	    newUser.save();
 
 	});
 
