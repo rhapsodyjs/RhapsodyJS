@@ -1,17 +1,26 @@
 var fs = require('fs-extra'),
-    path = require('path');
+    path = require('path'),
+    appPath = process.cwd(),
+    Logger = require('./logger');
 
 module.exports = {
 
   scaffoldApp: function scaffoldApp(appName, appPath, appVersion) {
     appPath = path.join(appPath, appName);
 
-    console.log('Scaffolding app');
-    fs.mkdirSync(appPath);
+    Logger('Scaffolding app');
+  
+    try {
+      fs.mkdirSync(appPath);
+    }
+    catch(e) {
+      Logger.error(e.message);
+    }
+
     //Copy the scaffold of a project to the app folder
     fs.copySync(path.join(__dirname, '/../scaffold'), appPath, function(err) {
       if(err) {
-        return console.warn(err);
+        return Logger.error(err);
       }
     });
 
@@ -19,12 +28,12 @@ module.exports = {
     fs.mkdirSync(path.join(appPath, '/node_modules'));
     fs.copySync(path.join(__dirname, '/../../'), path.join(appPath, '/node_modules/rhapsody'), function(err) {
       if(err) {
-        return console.warn(err);
+        return Logger.error(err);
       }
     });
 
 
-    console.log('Generating package.json');
+    logger.log('Generating package.json');
     //Generate package.json
     var packageFile = {
       'name': appName,
@@ -40,9 +49,17 @@ module.exports = {
         fs.remove(appPath, function(err) {
 
         });
-        return console.warn(err);
+        return Logger.error(err);
       }
     });
+  },
+
+  scaffoldModel: function scaffoldModel(modelName, modelAttributes) {
+
+  },
+
+  scaffoldController: function scaffoldController(controllerName) {
+
   }
 
 };

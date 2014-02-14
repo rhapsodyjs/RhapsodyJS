@@ -7,7 +7,6 @@ module.exports = function rhapsody(root) {
       server;
 
   global.Rhapsody = global.Rhapsody || require('./rhapsody/globalRhapsody')(root);
-  Rhapsody.version
 
   var router = require('./rhapsody/router');
 
@@ -38,7 +37,7 @@ module.exports = function rhapsody(root) {
   return {
     open: function(port, callback) {
       server = app.listen(port);
-      console.log('Listening port ' + port);
+      Rhapsody.log('Listening port ' + port);
       
       if(callback) {
         callback();
@@ -49,7 +48,7 @@ module.exports = function rhapsody(root) {
 
     close: function(callback) {
       server.close(callback);
-      console.log('Server closed');
+      Rhapsody.log.warn('Server closed');
     }
   }
 

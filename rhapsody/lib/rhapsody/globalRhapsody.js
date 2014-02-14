@@ -12,6 +12,8 @@ module.exports = function globalRhapsody(root) {
 
     generateModels: require('./models'),
 
+    log: require('./logger'),
+
     models: {},
 
     /**
