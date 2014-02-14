@@ -70,7 +70,9 @@ parser.command('generate').callback(function(opts) {
   if(extras[1] === 'model') {
     if(extras.length <= 3) {
       msg.argument('attribute');
-      return msg.usage('model <name> <attribute:type> [|attribute:type]');
+      msg.usage('model <name> <attribute:type> [|attribute:type]');
+      msg.showOptions('type', [['String', ''], ['Number', ''], ['Date', ''], ['Buffer', ''], ['Boolean', ''], ['Mixed', ''], ['Objectid', ''], ['Array', '']]);
+      return;
     }
     else {
       scaffolder.scaffoldModel(extras[2], extras.slice(3, extras.length));
@@ -80,7 +82,9 @@ parser.command('generate').callback(function(opts) {
   if(extras[1] === 'controller') {
     if(extras.length <= 3) {
       msg.argument('view');
-      return msg.usage('controller <name> <view> [|view]');
+      msg.usage('controller <name> <view> [|view]');
+      msg.showOptions('name', [['name\t', 'Just the name'], ['verb:name', 'The HTTP verb, followed by the name']]);
+      return;
     }
     else {
       scaffolder.scaffoldController(extras[2], extras.slice(3, extras.length));
@@ -88,5 +92,9 @@ parser.command('generate').callback(function(opts) {
   }
 
 }).help('Create a new controller or model');
+
+parser.command('build').callback(function(opts) {
+  var extras = opts._;
+});
 
 parser.parse();

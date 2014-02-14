@@ -99,7 +99,9 @@ module.exports = {
 
     try {
       fs.writeFile(path.join(appPath, '/models/' + modelName + '.js'), modelString, function(err) {
-
+        if(err) {
+          return Logger.error(err);
+        }
       });
     }
     catch(e) {

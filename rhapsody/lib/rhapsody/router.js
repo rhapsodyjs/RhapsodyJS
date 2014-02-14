@@ -133,7 +133,7 @@ var Router = {
 
     //Check if the view has a custom verb
     //If not, set is as GET
-    var action = viewName.split(/\s+/g);
+    var action = viewName.split(':');
     if(action.length == 1) {
       viewPath = action[0],
       verb = 'get';
