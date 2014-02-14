@@ -59,6 +59,9 @@ var Router = {
           if(files.indexOf('data') !== -1) {
             throw {message: 'A first-level controller can\'t be named "data"', name: 'InvalidControllerName'};
           }
+          if(files.indexOf('backboneModels') !== -1) {
+            throw {message: 'A first-level controller can\'t be named "backboneModels"', name: 'InvalidControllerName'};
+          }
 
         }
 

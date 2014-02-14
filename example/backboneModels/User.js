@@ -1,0 +1,1 @@
+var User = Backbone.Model.extend({"idAttribute":"_id","urlRoot":"/data/User","defaults":{}});

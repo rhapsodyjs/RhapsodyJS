@@ -1,8 +1,8 @@
 'use strict';
 
-var fs = require('fs'),
-	_ = require('lodash'),
-  path = require('path');
+var fs = require('fs-extra'),
+    _ = require('lodash'),
+    path = require('path');
 
 /**
  * Models can have the following attributes:
@@ -22,7 +22,7 @@ var fs = require('fs'),
  * Generate client and server-side models
  * @return {[type]} [description]
  */
-var generateModels = function generateModels() {
+var generateModels = function generateModels(buildBackboneModels) {
   var jsFileRegex = /.+\.js/gi;
 
 	var modelsPath = path.join(Rhapsody.root, '/models');
@@ -61,12 +61,15 @@ var generateModels = function generateModels() {
       }
 
       var serverModel = generateServerModel(modelName, serverAttributes, validations, requiredModel);
-      var clientModel = generateClientModel(modelName, clientDefaults, requiredModel);
+
+      //If, during the build, the Backbone models must be generated
+      if(buildBackboneModels) {
+        generateClientModel(modelName, clientDefaults, requiredModel);
+      }
 
       Rhapsody.models[modelName] = {
         options: requiredModel.options,
-        serverModel: serverModel,
-        clientModel: clientModel
+        serverModel: serverModel
       }
 
     }
@@ -105,7 +108,26 @@ var generateClientModel = function generateClientModel(modelName, clientDefaults
   clientModel = _.merge(clientModel, requiredModel.sharedMethods);
   clientModel + _.merge(clientModel, requiredModel.clientMethods);
 
-  return clientModel;
+  //Create the Backbone.Model file
+  var modelString = 'var ' + modelName + ' = Backbone.Model.extend(';
+  modelString += JSON.stringify(clientModel);
+  modelString += ');';
+
+  var modelPath = path.join(Rhapsody.root, '/backboneModels/' + modelName + '.js');
+
+  //Remove if the Backbone.Model already exists
+  fs.remove(modelPath, function(err) {
+    if(err) {
+      throw err;
+    }
+    //Then create it again
+    fs.writeFile(modelPath, modelString, function(err) {
+      if(err) {
+        throw err;
+      }
+    });
+
+  });
 }
 
 

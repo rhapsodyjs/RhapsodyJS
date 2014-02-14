@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function rhapsody(root) {
+module.exports = function rhapsody(root, buildBackboneModels) {
 
   var express = require('express'),
       app = express(),
@@ -18,8 +18,7 @@ module.exports = function rhapsody(root) {
   }
 
   //Put the models in the global Rhapsody.models
-  Rhapsody.generateModels();
-
+  Rhapsody.generateModels(buildBackboneModels);
 
   //Configure express options
   app.configure(function() {
@@ -27,6 +26,7 @@ module.exports = function rhapsody(root) {
     app.use(express.cookieParser(Rhapsody.defaults.cookies.secret)); //Actives cookie support
     app.use(express.cookieSession({secret: Rhapsody.defaults.cookies.sessionSecret})); //Actives session support
     app.use('/static', express.static(Rhapsody.root + '/static'));
+    app.use('/backboneModels', express.static(Rhapsody.root + '/backboneModels'));
   });
 
   router.routeControllers(app);
@@ -37,7 +37,7 @@ module.exports = function rhapsody(root) {
   return {
     open: function(port, callback) {
       server = app.listen(port);
-      Rhapsody.log('Listening port ' + port);
+      Rhapsody.log.info('Listening port ' + port);
       
       if(callback) {
         callback(server);

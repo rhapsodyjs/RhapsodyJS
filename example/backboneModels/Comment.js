@@ -1,0 +1,1 @@
+var Comment = Backbone.Model.extend({"idAttribute":"_id","urlRoot":"/data/Comment","defaults":{"text":"Empty comment"}});
