@@ -6,7 +6,8 @@ module.exports = function rhapsody(root) {
       app = express(),
       server;
 
-  global.Rhapsody = require('./rhapsody/globalRhapsody')(root);
+  global.Rhapsody = global.Rhapsody || require('./rhapsody/globalRhapsody')(root);
+  Rhapsody.version
 
   var router = require('./rhapsody/router');
 

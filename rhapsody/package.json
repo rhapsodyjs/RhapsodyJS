@@ -1,12 +1,27 @@
 {
-  "name": "rhapsodyjs",
+  "name": "rhapsody",
   "description": "Lib HMVC for NodeJS",
   "version": "0.0.1",
-  "private": true,
+  "homepage": "https://github.com/talyssonoc/rhapsodyjs",
+  "author": {
+    "name": "talyssonoc",
+    "email": "talyssonoc@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/talyssonoc/rhapsodyjs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/talyssonoc/rhapsodyjs/issues"
+  },
+  "engines": {
+    "node": ">= 0.10.0"
+  },
   "keywords": [
     "mvc",
     "hmvc",
-    "framework"
+    "framework",
+    "fullstack"
   ],
   "main": "./lib/",
   "bin": {

@@ -3,7 +3,11 @@
 var parser = require('nomnom'),
     appPath = process.cwd(),
     appName = '',
-    scaffoldPath = __dirname + '/scaffold';
+    scaffoldPath = __dirname + '/scaffold',
+    pjson = require(__dirname + '/../package.json');
+
+global.Rhapsody = global.Rhapsody || {};
+Rhapsody.version = pjson.version;
 
 parser.script('rhapsody')
 
@@ -12,11 +16,11 @@ parser.command('new').callback(function(opts) {
     return console.warn('You forgot the app name');
   }
 
-  var scaffold = require('./rhapsody/scaffold');
+  var scaffolder = require('./rhapsody/scaffolder');
 
   appName = opts._[1];
 
-  scaffold(appName, appPath);
+  scaffolder.scaffoldApp(appName, appPath, Rhapsody.version);
 
 }).help('Create a new RhapsodyJS app');
 
