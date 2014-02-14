@@ -1,7 +1,8 @@
 'use strict';
 
 var fs = require('fs'),
-	_ = require('lodash');
+	_ = require('lodash'),
+  path = require('path');
 
 /**
  * Models can have the following attributes:
@@ -22,47 +23,53 @@ var fs = require('fs'),
  * @return {[type]} [description]
  */
 var generateModels = function generateModels() {
-	var modelsPath = Rhapsody.root + '/models';
+  var jsFileRegex = /.+\.js/gi;
+
+	var modelsPath = path.join(Rhapsody.root, '/models');
 
 	fs.readdirSync(modelsPath).forEach(function(file) {
-		var serverAttributes = {},
-			validations = {},
+    if(jsFileRegex.test(file)) {
+
+      var serverAttributes = {},
+      validations = {},
       clientDefaults = {};
 
-		var modelName = file.substring(0, file.length - 3);
-		var requiredModel = require(modelsPath + '/' + modelName);
-		var modelAttributes = requiredModel.attributes;
+      var modelName = file.substring(0, file.length - 3);
+      var requiredModel = require(path.join(modelsPath, '/' + modelName));
+      var modelAttributes = requiredModel.attributes;
 
-		for(var attr in modelAttributes) {
-			//If the attribute has properties
-			if(typeof modelAttributes[attr] === 'object' && modelAttributes[attr] != null) {
-				if(typeof modelAttributes[attr].validations === 'undefined') {
-					serverAttributes[attr] = modelAttributes[attr];
-				}
-				//If it has validations, save it
-				else {
-					serverAttributes[attr] = _.omit(modelAttributes[attr], 'validations'); //Creates a copy of the attributes without the validations array
-					validations[attr] = modelAttributes[attr].validations;
-				}
+      for(var attr in modelAttributes) {
+        //If the attribute has properties
+        if(typeof modelAttributes[attr] === 'object' && modelAttributes[attr] != null) {
+          if(typeof modelAttributes[attr].validations === 'undefined') {
+            serverAttributes[attr] = modelAttributes[attr];
+          }
+          //If it has validations, save it
+          else {
+            serverAttributes[attr] = _.omit(modelAttributes[attr], 'validations'); //Creates a copy of the attributes without the validations array
+            validations[attr] = modelAttributes[attr].validations;
+          }
 
-        //Save the default value to use in generated client model
-        if(typeof modelAttributes[attr].default !== 'undefined') {
-          clientDefaults[attr] = modelAttributes[attr].default;
+          //Save the default value to use in generated client model
+          if(typeof modelAttributes[attr].default !== 'undefined') {
+            clientDefaults[attr] = modelAttributes[attr].default;
+          }
         }
-			}
-			else  {
-				serverAttributes[attr] = modelAttributes[attr];
-			}
-		}
+        else  {
+          serverAttributes[attr] = modelAttributes[attr];
+        }
+      }
 
-		var serverModel = generateServerModel(modelName, serverAttributes, validations, requiredModel);
-    var clientModel = generateClientModel(modelName, clientDefaults, requiredModel);
+      var serverModel = generateServerModel(modelName, serverAttributes, validations, requiredModel);
+      var clientModel = generateClientModel(modelName, clientDefaults, requiredModel);
 
-		Rhapsody.models[modelName] = {
-			options: requiredModel.options,
-			serverModel: serverModel,
-			clientModel: clientModel
-		}
+      Rhapsody.models[modelName] = {
+        options: requiredModel.options,
+        serverModel: serverModel,
+        clientModel: clientModel
+      }
+
+    }
 	});
 };
 

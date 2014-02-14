@@ -40,7 +40,7 @@ module.exports = function rhapsody(root) {
       Rhapsody.log('Listening port ' + port);
       
       if(callback) {
-        callback();
+        callback(server);
       }
 
       return server;

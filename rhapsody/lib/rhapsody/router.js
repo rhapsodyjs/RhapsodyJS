@@ -169,9 +169,8 @@ var Router = {
    * @param  {Express} app An Express app
    */
   routeModelsREST: function routeModelsREST(app) {
-    fs.readdirSync(Rhapsody.root + '/models').forEach(function(file) {
-      var modelName = file.substring(0, file.length - 3);
-      var model = Rhapsody.requireModel(modelName, true);
+    for(var modelName in Rhapsody.models) {
+      var model = Rhapsody.models[modelName];
       var mongoModel = model.serverModel;
       var modelURL = '/data/' + modelName;
 
@@ -266,7 +265,7 @@ var Router = {
 
       }
 
-    });
+    }
   }
 };
 

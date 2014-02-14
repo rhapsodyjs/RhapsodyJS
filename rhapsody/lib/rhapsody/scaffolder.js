@@ -33,7 +33,7 @@ module.exports = {
     });
 
 
-    logger.log('Generating package.json');
+    Logger('Generating package.json');
     //Generate package.json
     var packageFile = {
       'name': appName,
@@ -54,11 +54,60 @@ module.exports = {
     });
   },
 
-  scaffoldModel: function scaffoldModel(modelName, modelAttributes) {
+  scaffoldModel: function scaffoldModel(modelName, attributes) {
+    var model = {
+      attributes: {
+      },
 
+      sharedMethods: {
+      },
+
+      clientMethods: {
+
+      },
+
+      serverMethods: {
+        
+      },
+
+      options: {
+        allowREST: true,
+        middlewares: []
+      }
+    };
+
+    var attr, i, attribute;
+
+    //Fills the model attributes with it's types
+    for(i = 0; i < attributes.length; i++) {
+      attr = attributes[i];
+      attribute = attr.split(':');
+      if(attribute.length === 2) {
+        model.attributes[attribute[0]] = {
+          type: attribute[1]
+        }
+      }
+      else {
+        return Logger.error('You forgot an attribute type');
+      }
+    }
+
+    var modelString = 'var ' + modelName + ' = ';
+    modelString += JSON.stringify(model, null, '\t');
+    modelString += ';';
+    modelString += '\n\nmodule.exports = ' + modelName;
+
+    try {
+      fs.writeFile(path.join(appPath, '/models/' + modelName + '.js'), modelString, function(err) {
+
+      });
+    }
+    catch(e) {
+      throw e;
+    }
   },
 
-  scaffoldController: function scaffoldController(controllerName) {
+  scaffoldController: function scaffoldController(controllerName, views) {
 
   }
 

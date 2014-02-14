@@ -11,27 +11,29 @@ var levels = {
 colors.setTheme(levels);
 
 var Logger = function Logger(message) {
-	console.log(message.info);
+	console.log(message);
 };
 
+Logger.themes = levels;
+
 Logger.input = function(message) {
-	console.log(message.input)
+	console.log(message.input);
 };
 
 Logger.info = function(message) {
-	console.log(message.info)
+	console.log(message.info);
 };
 
 Logger.warn = function(message) {
-	console.log(message.warn)
+	console.log(message.warn);
 };
 
 Logger.debug = function(message) {
-	console.log(message.debug)
+	console.log(message.debug);
 };
 
 Logger.error = function(message) {
-	console.log(message.error)
+	console.log(message.error);
 };
 
 module.exports = Logger;
