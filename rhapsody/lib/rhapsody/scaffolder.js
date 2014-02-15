@@ -1,7 +1,8 @@
 var fs = require('fs-extra'),
     path = require('path'),
     appPath = process.cwd(),
-    Logger = require('./logger');
+    Logger = require('./logger'),
+    npm = require('npm');
 
 module.exports = {
 
@@ -9,7 +10,6 @@ module.exports = {
     appPath = path.join(appPath, appName);
 
     Logger('Scaffolding app');
-  
     try {
       fs.mkdirSync(appPath);
     }
@@ -24,16 +24,6 @@ module.exports = {
       }
     });
 
-    //Copy RhapsodyJS itself to node_modules
-    fs.mkdirSync(path.join(appPath, '/node_modules'));
-    fs.copySync(path.join(__dirname, '/../../'), path.join(appPath, '/node_modules/rhapsody'), function(err) {
-      if(err) {
-        return Logger.error(err);
-      }
-    });
-
-
-    Logger('Generating package.json');
     //Generate package.json
     var packageFile = {
       'name': appName,
@@ -45,12 +35,21 @@ module.exports = {
 
     fs.writeJSON(path.join(appPath, '/package.json'), packageFile, function(err) {
       if(err) {
-        //If it fails, delete the folder created to the app
-        fs.remove(appPath, function(err) {
-
-        });
+        fs.remove(appPath, function(err) {});
         return Logger.error(err);
       }
+
+      Logger('Running "npm install"')
+      //Run 'npm install' inside the new app folder
+      npm.load({prefix: appPath, loglevel: 'error'}, function (err) {
+        npm.commands.install([], function (er, data) {
+          
+        });
+        npm.on('log', function (message) {
+          //console.log(message);
+        });
+      });
+
     });
   },
 

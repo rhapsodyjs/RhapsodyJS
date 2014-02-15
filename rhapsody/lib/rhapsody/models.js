@@ -10,6 +10,7 @@ var fs = require('fs-extra'),
  * 		- type (http://mongoosejs.com/docs/schematypes.html)
  * 		- validations (must be in sharedMethods)
  *    - default
+ *    - required
  * - sharedMethods
  * - clientMethods
  * - serverMethods
