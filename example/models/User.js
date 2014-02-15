@@ -26,6 +26,7 @@ var User = {
 
 	options: {
 		allowREST: true,
+    urlRoot: '/justUser',
 		middlewares: []
 	}
 };

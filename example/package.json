@@ -1,0 +1,7 @@
+{
+  "name": "sample",
+  "main": "app",
+  "dependencies": {
+    "rhapsody": "~0.0.4"
+  }
+}

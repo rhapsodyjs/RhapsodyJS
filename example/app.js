@@ -1,4 +1,3 @@
-var rhapsody = require('../rhapsody/')(__dirname, true);
-// var rhapsody = require('rhapsodyjs')(__dirname, true);
+var rhapsody = require('rhapsody')(__dirname);
 
 rhapsody.open(4242);

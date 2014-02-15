@@ -17,6 +17,7 @@ var fs = require('fs-extra'),
  * - options
  * 		- allowREST
  * 		- middlewares
+ *    - urlRoot (for a custom URL root)
  */
 
 /**
@@ -28,16 +29,30 @@ var generateModels = function generateModels(buildBackboneModels) {
 
 	var modelsPath = path.join(Rhapsody.root, '/models');
 
+  //If the Backbone models are going to be generated
+  // clean where they'll be saved
+  if(buildBackboneModels) {
+    fs.removeSync(path.join(Rhapsody.root, '/backboneModels/gen/'), function (err) {
+      if(err) {
+        throw err;
+      }
+    });
+    fs.mkdirSync(path.join(Rhapsody.root, '/backboneModels/gen/'), function (err) {
+      if(err) {
+        throw err;
+      }
+    });
+  }
+
 	fs.readdirSync(modelsPath).forEach(function(file) {
     if(jsFileRegex.test(file)) {
 
       var serverAttributes = {},
-      validations = {},
-      clientDefaults = {};
-
-      var modelName = file.substring(0, file.length - 3);
-      var requiredModel = require(path.join(modelsPath, '/' + modelName));
-      var modelAttributes = requiredModel.attributes;
+          validations = {},
+          clientDefaults = {},
+          modelName = file.substring(0, file.length - 3),
+          requiredModel = require(path.join(modelsPath, '/' + modelName)),
+          modelAttributes = requiredModel.attributes;
 
       for(var attr in modelAttributes) {
         //If the attribute has properties
@@ -47,7 +62,8 @@ var generateModels = function generateModels(buildBackboneModels) {
           }
           //If it has validations, save it
           else {
-            serverAttributes[attr] = _.omit(modelAttributes[attr], 'validations'); //Creates a copy of the attributes without the validations array
+            //Creates a copy of the attributes without the validations array
+            serverAttributes[attr] = _.omit(modelAttributes[attr], 'validations');
             validations[attr] = modelAttributes[attr].validations;
           }
 
@@ -99,9 +115,22 @@ var generateServerModel = function generateServerModel(modelName, serverAttribut
 }
 
 var generateClientModel = function generateClientModel(modelName, clientDefaults, requiredModel) {
+  var urlRoot;
+
+  //If the user specified a custom urlRoot, use it
+  //otherwise, use /data/ModelName
+  if(typeof requiredModel.options !== 'undefined' && requiredModel.options.urlRoot) {
+    urlRoot = requiredModel.options.urlRoot;
+  }
+  else {
+    urlRoot = '/data/' + modelName;
+  }
+
+
+  //Possible fields of a Backbone.Model
   var clientModel = {
     idAttribute: '_id',
-    urlRoot: '/data/' + modelName,
+    urlRoot: urlRoot,
     defaults: clientDefaults
   };
 
@@ -114,7 +143,7 @@ var generateClientModel = function generateClientModel(modelName, clientDefaults
   modelString += JSON.stringify(clientModel);
   modelString += ');';
 
-  var modelPath = path.join(Rhapsody.root, '/backboneModels/' + modelName + '.js');
+  var modelPath = path.join(Rhapsody.root, '/backboneModels/gen/' + modelName + '.js');
 
   //Remove if the Backbone.Model already exists
   fs.remove(modelPath, function(err) {

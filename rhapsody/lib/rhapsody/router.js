@@ -173,9 +173,15 @@ var Router = {
    */
   routeModelsREST: function routeModelsREST(app) {
     for(var modelName in Rhapsody.models) {
-      var model = Rhapsody.models[modelName];
-      var mongoModel = model.serverModel;
-      var modelURL = '/data/' + modelName;
+      var model = Rhapsody.models[modelName],
+          mongoModel = model.serverModel,
+          modelURL = '/data/' + modelName;
+
+      //If the user specified a custom urlRoot, use it
+      //otherwise, use /data/ModelName
+      if(typeof model.options !== 'undefined' && model.options.urlRoot) {
+        modelURL = model.options.urlRoot;
+      }
 
       //Test if the current model didn't disallowed REST URLs
       if((typeof model.options === 'undefined' || typeof model.options.allowREST === 'undefined') || model.options.allowREST) {
