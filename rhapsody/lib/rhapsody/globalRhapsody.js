@@ -7,7 +7,7 @@ module.exports = function globalRhapsody(root) {
       db: require(root + '/config/database')
     },
 
-    database: require('mongoose'),
+    database: {},
     defaults: require(root + '/config/defaults'),
 
     generateModels: require('./models'),

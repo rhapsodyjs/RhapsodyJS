@@ -2,6 +2,6 @@
   "name": "sample",
   "main": "app",
   "dependencies": {
-    "rhapsody": "~0.0.4"
+    "rhapsody": "0.0.7"
   }
 }

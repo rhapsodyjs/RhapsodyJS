@@ -10,15 +10,18 @@ module.exports = function rhapsody(root, buildBackboneModels) {
 
   var router = require('./rhapsody/router');
 
-  try {
-    Rhapsody.dbConnection = Rhapsody.database.createConnection(Rhapsody.config.db.host, Rhapsody.config.db.name);
+  //Only connects and generate models if database is enabled
+  if(Rhapsody.config.db.active) {
+    Rhapsody.database = require('mongoose');
+    try {
+      Rhapsody.dbConnection = Rhapsody.database.createConnection(Rhapsody.config.db.host, Rhapsody.config.db.name);
+    }
+    catch(e) {
+      console.error(e.message);
+    }
+    //Put the models in the global Rhapsody.models
+    Rhapsody.generateModels(buildBackboneModels);
   }
-  catch(e) {
-    console.error(e.message);
-  }
-
-  //Put the models in the global Rhapsody.models
-  Rhapsody.generateModels(buildBackboneModels);
 
   //Configure express options
   app.configure(function() {

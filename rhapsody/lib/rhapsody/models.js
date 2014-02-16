@@ -18,11 +18,12 @@ var fs = require('fs-extra'),
  * 		- allowREST
  * 		- middlewares
  *    - urlRoot (for a custom URL root)
+ *
+ * The Backbone model generated will be compatible with RequireJS, CommonJS and global scope
  */
 
 /**
  * Generate client and server-side models
- * @return {[type]} [description]
  */
 var generateModels = function generateModels(buildBackboneModels) {
   var jsFileRegex = /^\w+\.js$/i;
@@ -93,6 +94,14 @@ var generateModels = function generateModels(buildBackboneModels) {
 	});
 };
 
+/**
+ * Generate a single server model
+ * @param  {String} modelName
+ * @param  {Object} serverAttributes The attributes the model will have
+ * @param  {Array} validations      Array of validation names
+ * @param  {Object} requiredModel    The generic model
+ * @return {Mongoose Model}
+ */
 var generateServerModel = function generateServerModel(modelName, serverAttributes, validations, requiredModel) {
   var attr,
       validation,
@@ -110,7 +119,7 @@ var generateServerModel = function generateServerModel(modelName, serverAttribut
 
   var schema = new Rhapsody.database.Schema(serverAttributes);
   var serverModel = Rhapsody.dbConnection.model(modelName, schema);
-
+  
   return serverModel;
 }
 
@@ -138,10 +147,14 @@ var generateClientModel = function generateClientModel(modelName, clientDefaults
   clientModel = _.merge(clientModel, requiredModel.sharedMethods);
   clientModel + _.merge(clientModel, requiredModel.clientMethods);
 
-  //Create the Backbone.Model file
-  var modelString = 'var ' + modelName + ' = Backbone.Model.extend(';
-  modelString += JSON.stringify(clientModel);
-  modelString += ');';
+  //Lodash template for Backbone.Model
+  var backboneModelTemplate = _.template('(function(){var <%= name %>=Backbone.Model.extend(<%= modelData %>);if(typeof module!==\'undefined\' && module.exports){module.exports=<%= name %>;}else if(typeof window.define===\'function\' && window.define.amd){define(function(){return <%= name %>;});}else{window.<%= name %>=<%= name %>;}}());');
+
+  //Create the Backbone.Model file content
+  var backboneModelString = backboneModelTemplate({
+    name: modelName,
+    modelData: JSON.stringify(clientModel)
+  });
 
   var modelPath = path.join(Rhapsody.root, '/backboneModels/gen/' + modelName + '.js');
 
@@ -151,7 +164,7 @@ var generateClientModel = function generateClientModel(modelName, clientDefaults
       throw err;
     }
     //Then create it again
-    fs.writeFile(modelPath, modelString, function(err) {
+    fs.writeFile(modelPath, backboneModelString, function(err) {
       if(err) {
         throw err;
       }

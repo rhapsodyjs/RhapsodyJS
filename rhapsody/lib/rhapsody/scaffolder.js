@@ -2,7 +2,8 @@ var fs = require('fs-extra'),
     path = require('path'),
     appPath = process.cwd(),
     Logger = require('./logger'),
-    npm = require('npm');
+    npm = require('npm'),
+    _ = require('lodash');
 
 module.exports = {
 
@@ -29,7 +30,7 @@ module.exports = {
       'name': appName,
       'main': 'app',
       'dependencies': {
-        'rhapsody': ('~' + appVersion)
+        'rhapsody': ('>=' + appVersion)
       }
     };
 
@@ -71,7 +72,8 @@ module.exports = {
 
       options: {
         allowREST: true,
-        middlewares: []
+        middlewares: [],
+        urlRoot: false
       }
     };
 
@@ -91,10 +93,12 @@ module.exports = {
       }
     }
 
-    var modelString = 'var ' + modelName + ' = ';
-    modelString += JSON.stringify(model, null, '\t');
-    modelString += ';';
-    modelString += '\n\nmodule.exports = ' + modelName;
+    var modelTemplate = _.template('var <%= name %> = <%= modelData %>;\n\nmodule.exports = <%= name %>;');
+
+    var modelString = modelTemplate({
+      name: modelName,
+      modelData: JSON.stringify(model, null, '\t')
+    });
 
     try {
       fs.writeFile(path.join(appPath, '/models/' + modelName + '.js'), modelString, function(err) {
