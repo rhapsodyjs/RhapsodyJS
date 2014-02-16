@@ -19,11 +19,11 @@ module.exports = function globalRhapsody(root) {
     /**
      * Returns the serverModel or the whole model
      * @param  {String} modelName The name of the model
-     * @param  {[Boolean]} field     Optional. Makes return the whole model
+     * @param  {[Boolean]} full     Optional. Makes return the whole model
      * @return {Model}
      */
-    requireModel: function requireModel(modelName, complete) {
-      if(complete) {
+    requireModel: function requireModel(modelName, full) {
+      if(full) {
         return Rhapsody.models[modelName];
       }
       return Rhapsody.models[modelName].serverModel;

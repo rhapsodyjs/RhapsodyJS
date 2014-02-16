@@ -7,7 +7,8 @@ var parser = require('nomnom'),
 	pjson = require(__dirname + '/../package.json'),
 	colors = require('colors'),
   Logger = require('./rhapsody/logger'),
-  scaffolder = require('./rhapsody/scaffolder');
+  scaffolder = require('./rhapsody/scaffolder'),
+  path = require('path');
 
 colors.setTheme(Logger.themes);
 
@@ -58,12 +59,14 @@ var msg = {
 
 var server = {
   build: function build() {
-    var rhapsodyServer = require('./')(appPath, true);
+    //Imports the local RhapsodyJS of the app
+    var rhapsodyServer = require(path.join(appPath, '/node_modules/rhapsody'))(appPath, true);
     console.log('Server finished building'.info);
     return rhapsodyServer;
   },
   run: function run(rhapsodyServer) {
-    rhapsodyServer = rhapsodyServer || require('./')(appPath, false);
+    //Imports the local RhapsodyJS of the app
+    rhapsodyServer = rhapsodyServer || require(path.join(appPath, '/node_modules/rhapsody'))(appPath, false);
     rhapsodyServer.open(4242);
   }
 };
