@@ -25,7 +25,7 @@ var fs = require('fs-extra'),
  * @return {[type]} [description]
  */
 var generateModels = function generateModels(buildBackboneModels) {
-  var jsFileRegex = /.+\.js/gi;
+  var jsFileRegex = /^\w+\.js$/i;
 
 	var modelsPath = path.join(Rhapsody.root, '/models');
 
