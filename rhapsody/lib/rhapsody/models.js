@@ -20,7 +20,7 @@ var fs = require('fs-extra'),
  * 		- middlewares
  *    - urlRoot (for a custom URL root)
  *
- * The Backbone model generated will be compatible with RequireJS, CommonJS and global scope
+ * The Backbone model generated is compatible with RequireJS, CommonJS and global scope
  */
 
 /**
