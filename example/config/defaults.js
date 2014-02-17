@@ -1,4 +1,6 @@
 module.exports = {
+  port: 4242,
+
   routes: {
     //Controller used when access the app's root
     mainController: 'main',
@@ -13,5 +15,7 @@ module.exports = {
   cookies : {
     secret: 'rhapsody',
     sessionSecret: 'rhapsody'
-  }
+  },
+
+  viewEngine: 'ejs'
 }

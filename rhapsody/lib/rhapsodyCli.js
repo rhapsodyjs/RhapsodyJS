@@ -60,14 +60,24 @@ var msg = {
 var server = {
   build: function build() {
     //Imports the local RhapsodyJS of the app
-    var rhapsodyServer = require(path.join(appPath, '/node_modules/rhapsody'))(appPath, true);
+    var Rhapsody = require(path.join(appPath, '/node_modules/rhapsody')),
+    rhapsodyServer = new Rhapsody({
+          root: appPath,
+          build: true
+        });
+
     console.log('Server finished building'.info);
     return rhapsodyServer;
   },
   run: function run(rhapsodyServer) {
     //Imports the local RhapsodyJS of the app
-    rhapsodyServer = rhapsodyServer || require(path.join(appPath, '/node_modules/rhapsody'))(appPath, false);
-    rhapsodyServer.open(4242);
+    var Rhapsody = require(path.join(appPath, '/node_modules/rhapsody'));
+    rhapsodyServer = rhapsodyServer || new Rhapsody({
+      root: appPath,
+      build: false
+    });
+
+    rhapsodyServer.open();
   }
 };
 
@@ -130,6 +140,10 @@ parser.command('generate').callback(function(opts) {
 
 }).help('Create a new controller or model');
 
+
+/**
+ * Builds the project without run the server
+ */
 parser.command('build').callback(function(opts) {
   var extras = opts._;
   if(extras.length > 1) {
@@ -139,6 +153,10 @@ parser.command('build').callback(function(opts) {
   return;
 }).help('Build the server without run it');
 
+
+/**
+ * Run the server, optionally not building it before
+ */
 parser.command('run')
 .option('no-build', {
   abbr: 'n',

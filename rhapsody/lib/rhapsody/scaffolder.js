@@ -44,10 +44,8 @@ module.exports = {
       //Run 'npm install' inside the new app folder
       npm.load({prefix: appPath, loglevel: 'error'}, function (err) {
         npm.commands.install([], function (er, data) {
-          
         });
         npm.on('log', function (message) {
-          //console.log(message);
         });
       });
 
