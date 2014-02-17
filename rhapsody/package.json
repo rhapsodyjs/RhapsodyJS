@@ -1,7 +1,7 @@
 {
   "name": "rhapsody",
   "description": "Lib HMVC for NodeJS",
-  "version": "0.0.8-beta",
+  "version": "0.0.8",
   "homepage": "https://github.com/talyssonoc/rhapsodyjs",
   "author": {
     "name": "talyssonoc",
@@ -23,7 +23,7 @@
     "framework",
     "fullstack"
   ],
-  "main": "./lib/",
+  "main": "./lib/rhapsody",
   "bin": {
     "rhapsody": "./lib/rhapsodyCli.js"
   },

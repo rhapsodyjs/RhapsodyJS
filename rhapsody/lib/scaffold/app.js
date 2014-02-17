@@ -1,3 +1,7 @@
-var rhapsody = require('rhapsody')(__dirname);
+var Rhapsody = require('rhapsody');
 
-rhapsody.open(4242);
+var rhapsody = new Rhapsody({
+  root: __dirname
+});
+
+rhapsody.open();
