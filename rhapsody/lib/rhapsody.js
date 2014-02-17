@@ -1,6 +1,7 @@
 'use strict';
 
-var path = require('path');
+var path = require('path'),
+    engines = require('consolidate');
 
 var Rhapsody = function Rhapsody(options) {
 
@@ -67,6 +68,7 @@ Rhapsody.prototype = {
       self.app.use(self.express.json()); //Parses the request body to JSON
       self.app.use(self.express.cookieParser(self.config.defaults.cookies.secret)); //Actives cookie support
       self.app.use(self.express.cookieSession({secret: self.config.defaults.cookies.sessionSecret})); //Actives session support
+      self.app.engine(self.config.defaults.viewEngine, engines[self.config.defaults.viewEngine]); //Set the default render engine module
       self.app.use('/static', self.express.static(self.root + '/static'));
       self.app.use('/backboneModels', self.express.static(self.root + '/backboneModels'));
     });

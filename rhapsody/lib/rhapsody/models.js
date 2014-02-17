@@ -8,11 +8,12 @@ var fs = require('fs-extra'),
  * Models can have the following attributes:
  * - attributes (just type, or the following)
  * 		- type (http://mongoosejs.com/docs/schematypes.html)
- * 		- validations (must be in sharedMethods)
+ * 		- serverValidations (must be in sharedMethods)
  *    - default
  *    - required
  * - sharedMethods
  * - clientMethods
+ *   - validate (the used methods must be in client methods or shared methods)
  * - serverMethods
  * - options
  * 		- allowREST
@@ -49,7 +50,7 @@ var generateModels = function generateModels(app, buildBackboneModels) {
     if(jsFileRegex.test(file)) {
 
       var serverAttributes = {},
-          validations = {},
+          serverValidations = {},
           clientDefaults = {},
           modelName = file.substring(0, file.length - 3),
           requiredModel = require(path.join(modelsPath, '/' + modelName)),
@@ -58,14 +59,14 @@ var generateModels = function generateModels(app, buildBackboneModels) {
       for(var attr in modelAttributes) {
         //If the attribute has properties
         if(typeof modelAttributes[attr] === 'object' && modelAttributes[attr] != null) {
-          if(typeof modelAttributes[attr].validations === 'undefined') {
+          if(typeof modelAttributes[attr].serverValidations === 'undefined') {
             serverAttributes[attr] = modelAttributes[attr];
           }
           //If it has validations, save it
           else {
-            //Creates a copy of the attributes without the validations array
-            serverAttributes[attr] = _.omit(modelAttributes[attr], 'validations');
-            validations[attr] = modelAttributes[attr].validations;
+            //Creates a copy of the attributes without the serverValidations array
+            serverAttributes[attr] = _.omit(modelAttributes[attr], 'serverValidations');
+            serverValidations[attr] = modelAttributes[attr].serverValidations;
           }
 
           //Save the default value to use in generated client model
@@ -78,7 +79,7 @@ var generateModels = function generateModels(app, buildBackboneModels) {
         }
       }
 
-      var serverModel = generateServerModel(modelName, serverAttributes, validations, requiredModel, app);
+      var serverModel = generateServerModel(modelName, serverAttributes, serverValidations, requiredModel, app);
 
       //If, during the build, the Backbone models must be generated
       if(buildBackboneModels) {
@@ -98,20 +99,21 @@ var generateModels = function generateModels(app, buildBackboneModels) {
  * Generate a single server model
  * @param  {String} modelName
  * @param  {Object} serverAttributes The attributes the model will have
- * @param  {Array} validations      Array of validation names
+ * @param  {Array} serverValidations      Array of validation names
  * @param  {Object} requiredModel    The generic model
+ * @param {Rhapsody} app A Rhapsody app
  * @return {Mongoose Model}
  */
-var generateServerModel = function generateServerModel(modelName, serverAttributes, validations, requiredModel, app) {
+var generateServerModel = function generateServerModel(modelName, serverAttributes, serverValidations, requiredModel, app) {
   var attr,
       validation,
       validationArray;
 
-  for(attr in validations) {
+  for(attr in serverValidations) {
     validationArray = [];
-    for(validation in validations[attr]) {
+    for(validation in serverValidations[attr]) {
       //Get the validation function in the sharedMethods
-      var validationFunction = requiredModel.sharedMethods[validations[attr][validation]];
+      var validationFunction = requiredModel.sharedMethods[serverValidations[attr][validation]];
       validationArray.push(validationFunction);
     }
     serverAttributes[attr].validate = validationArray;
@@ -123,6 +125,13 @@ var generateServerModel = function generateServerModel(modelName, serverAttribut
   return serverModel;
 }
 
+/**
+ * Generate a client model
+ * @param  {String} modelName      
+ * @param  {Array} clientDefaults Array of default values of any attribute
+ * @param  {Object} requiredModel  The generic model
+ * @param  {Rhapsody} app            A Rhapsody app
+ */
 var generateClientModel = function generateClientModel(modelName, clientDefaults, requiredModel, app) {
   var urlRoot;
 
@@ -145,7 +154,7 @@ var generateClientModel = function generateClientModel(modelName, clientDefaults
 
   //Merge shared methods first, so it can be overwriten by specific client methods
   clientModel = _.merge(clientModel, requiredModel.sharedMethods);
-  clientModel + _.merge(clientModel, requiredModel.clientMethods);
+  clientModel = _.merge(clientModel, requiredModel.clientMethods);
 
   //Lodash template for Backbone.Model
   var backboneModelTemplate = _.template('(function(){var <%= name %>=Backbone.Model.extend(<%= modelData %>);if(typeof module!==\'undefined\' && module.exports){module.exports=<%= name %>;}else if(typeof window.define===\'function\' && window.define.amd){define(function(){return <%= name %>;});}else{window.<%= name %>=<%= name %>;}}());');
@@ -171,7 +180,7 @@ var generateClientModel = function generateClientModel(modelName, clientDefaults
     });
 
   });
-}
+};
 
 
 module.exports = generateModels;

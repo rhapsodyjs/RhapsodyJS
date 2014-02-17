@@ -15,5 +15,7 @@ module.exports = {
   cookies : {
     secret: 'rhapsody',
     sessionSecret: 'rhapsody'
-  }
+  },
+
+  viewEngine: 'ejs'
 }

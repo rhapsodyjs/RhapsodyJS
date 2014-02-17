@@ -4,32 +4,31 @@ var fs = require('fs'),
     _ = require('lodash'),
     responses = require('./responses');
 
+/**
+ * Gotta remember that:
+ *   - A subcontroller should not have the same name of a view of its supercontroller
+ *   - A first-level controller should not have the same name of a view of mainController
+ */
+
 var Router = function(rhapsodyApp) {
   this.app = rhapsodyApp.app;
   this.rhapsody = rhapsodyApp;
 }
-
 
 Router.prototype = {
 
   /**
    * Create all the controller routes
    */
-  routeControllers: function routeController() {
+  routeControllers: function routeController() {    
 
-    // Define the path for the root of the server
-    var mainController = require(this.rhapsody.root + '/controllers/' + this.rhapsody.config.defaults.routes.mainController + '/' + this.rhapsody.config.defaults.routes.mainController),
-        views = mainController.views, 
-        controllerInfo = {path: this.rhapsody.root + '/controllers/' + this.rhapsody.config.defaults.routes.mainController};
-
-    this.bind(mainController.mainView || this.rhapsody.config.defaults.routes.mainView,
-      views[mainController.mainView || this.rhapsody.config.defaults.routes.mainView],
-      controllerInfo,
-      '',
-      '/?');
+    // Define the main controller as the root of the server
+    this.routeSingleController({
+      path: this.rhapsody.root + '/controllers/' + this.rhapsody.config.defaults.routes.mainController,
+      subs: []
+    }, this.rhapsody.config.defaults.routes.mainController);
 
     //Create all the other routes based on BFS
-
     var queue = [],
         currentController,
         exploringFirstLevelControllers = true,
@@ -37,7 +36,7 @@ Router.prototype = {
         files;
 
     queue.push({
-      path: this.rhapsody.root, // The path for the controller file
+      path: this.rhapsody.root, // The path for the controller folder
       subs: []    // The subpaths to be routed (like: if the URL is localhost/controller/subcontroller, the subs gonna be ['controller', 'subcontroller'])
     });
 
@@ -99,27 +98,57 @@ Router.prototype = {
   /**
    * Route all the views of a controller
    * @param  {Object} controllerInfo  Contains the subs and the path for the controller
+   * @param {String} serverRoot If it's routing the server root, import serverRoot controller
    */
-  routeSingleController: function routeSingleController(controllerInfo) {
-    var controller = require(controllerInfo.path + '/' + controllerInfo.subs[controllerInfo.subs.length - 1]),
-        views = controller.views,
+  routeSingleController: function routeSingleController(controllerInfo, serverRoot) {
+    var isServerRoot = typeof serverRoot !== 'undefined';
+
+    if(isServerRoot) {
+      var controller = require(controllerInfo.path + '/' + serverRoot);
+    }
+    else {
+      var controller = require(controllerInfo.path + '/' + controllerInfo.subs[controllerInfo.subs.length - 1]);
+    }
+
+    var views = controller.views,
         subs = controllerInfo.subs.join('/');
 
     for(var v in views) {
       if(views.hasOwnProperty(v)) {
         var view = views[v];
 
-        this.bind(v, view, controllerInfo, subs);
+        //If it's routing the server root, must change
+        if(isServerRoot) {
+          //Workaround for when a root view uses custom verb
+          var rootViewAction = v.split(':');
+          var rootViewName = (rootViewAction.length == 1 ? rootViewAction[0] : rootViewAction[1]);
+
+          if(rootViewName === 'static') {
+            throw {message: 'A root view can\'t be named "static"', name: 'InvalidViewName'};
+          }
+          if(rootViewName ===  'data') {
+            throw {message: 'A root view controller can\'t be named "data"', name: 'InvalidViewName'};
+          }
+          if(rootViewName === 'backboneModels') {
+            throw {message: 'A root view controller can\'t be named "backboneModels"', name: 'InvalidViewName'};
+          }
+
+          this.bind(v, view, controllerInfo, subs, '/' + rootViewName);
+        }
+        else {
+          this.bind(v, view, controllerInfo, subs);
+        }
 
       }
     }
 
+
     //Routes the controller root
     this.bind(controller.mainView || this.rhapsody.config.defaults.routes.mainView, 
-      views[controller.mainView || this.rhapsody.config.defaults.routes.mainView],
-      controllerInfo,
-      subs,
-      '/' + subs + '/?');
+    views[controller.mainView || this.rhapsody.config.defaults.routes.mainView],
+    controllerInfo,
+    subs,
+    '/' + subs + '/?');
   },
 
   /**
