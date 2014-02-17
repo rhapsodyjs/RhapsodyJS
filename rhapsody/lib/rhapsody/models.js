@@ -74,7 +74,7 @@ var generateModels = function generateModels(app, buildBackboneModels) {
             clientDefaults[attr] = modelAttributes[attr].default;
           }
         }
-        else  {
+        else {
           serverAttributes[attr] = modelAttributes[attr];
         }
       }
@@ -120,6 +120,11 @@ var generateServerModel = function generateServerModel(modelName, serverAttribut
   }
 
   var schema = new app.database.Schema(serverAttributes);
+
+  //Merge shared methods first, so it can be overwriten by specific server methods
+  schema.methods = _.merge(schema.methods, requiredModel.sharedMethods);
+  schema.methods = _.merge(schema.methods, requiredModel.serverMethods);
+
   var serverModel = app.dbConnection.model(modelName, schema);
   
   return serverModel;

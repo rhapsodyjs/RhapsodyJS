@@ -30,6 +30,7 @@ var UsersController = {
             console.log(err);
           }
           else {
+            console.log(user);
             res.render(__dirname + '/views/list.ejs', {users : user});
           }
         });

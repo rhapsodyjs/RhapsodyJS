@@ -21,7 +21,9 @@ var User = {
 	},
 
 	serverMethods: {
-		
+		customMethod: function() {
+      return 'Optional content';
+    }
 	},
 
 	options: {

@@ -16,21 +16,21 @@
 			idAttribute: '_id',
 			defaults: {
 				name: 'Name',
-				age: 0
+				age: 21
 			},
 			urlRoot: '/data/User'
 		});
 
-    CommentModel = Backbone.Model.extend({
-      idAttribute: '_id',
-      urlRoot: '/data/Comment'
-    });
+    // CommentModel = Backbone.Model.extend({
+    //   idAttribute: '_id',
+    //   urlRoot: '/data/Comment'
+    // });
 
-    var newComment = new CommentModel();
-    newComment.save();
+    // var newComment = new CommentModel();
+    // newComment.save();
 
 	    // var newUser = new UserModel({_id: '52fcca91c8c7b2fc0e2d50bf'});
-	    // var newUser = new UserModel();
+	    var newUser = new UserModel();
 			// var newUser = new UserModel({_id: '52f64f756dc38be8134a9b18'});
 		// newUser.fetch({
 	 //      success: function() {
@@ -41,14 +41,14 @@
 	 //      }
 	    // });
 	    
-    // newUser.save(this.attributes, {
-    //   success: function() {
-    //     alert('Success !');
-    //   },
-    //   error: function() {
-    //     alert('Error !');
-    //   }
-    // });
+    newUser.save(this.attributes, {
+      success: function() {
+        alert('Success !');
+      },
+      error: function() {
+        alert('Error !');
+      }
+    });
 
 	});
 
