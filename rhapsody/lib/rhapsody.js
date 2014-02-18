@@ -15,9 +15,9 @@ var Rhapsody = function Rhapsody(options) {
   this.router = new Router(this);
 
   this.config = {
-    database: require(path.join(options.root, '/config/database')),
-    defaults: require(path.join(options.root, '/config/defaults')),
-    session: require(path.join(options.root, '/config/session')),
+    database: require(path.join(options.root, '/app/config/database')),
+    defaults: require(path.join(options.root, '/app/config/defaults')),
+    session: require(path.join(options.root, '/app/config/session')),
     options: options
   };
 
@@ -40,10 +40,13 @@ Rhapsody.prototype = {
    * @return {Model}
    */
   requireModel: function requireModel(modelName, full) {
+    var model = this.models[modelName];
+
     if(full) {
-      return this.models[modelName];
+      return (model ? model : false);
     }
-    return this.models[modelName].serverModel;
+    return (model ? model.serverModel : false);
+    
   },
 
   /**
@@ -70,10 +73,10 @@ Rhapsody.prototype = {
     this.app.use(this.express.cookieSession({secret: this.config.session.sessionSecret})); //Actives session support
     this.app.engine(this.config.defaults.viewEngine, engines[this.config.defaults.viewEngine]); //Set the default render engine module
     this.app.use(this.app.router); //Use the custom routes above the static and backbone-models
-    this.app.use('/static', this.express.static(this.root + '/static')); //Static files should be here
+    this.app.use('/static', this.express.static(this.root + '/app/static')); //Static files should be here
     //Backbone models should be here for facility
     //the generated models will be in /backbone-models/gen/ModelName.js
-    this.app.use('/backbone-models', this.express.static(this.root + '/backbone-models'));
+    this.app.use('/backbone-models', this.express.static(this.root + '/app/backbone-models'));
 
     //Configure the routes
     this.router.routeControllers(this.app);
