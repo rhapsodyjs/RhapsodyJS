@@ -10,8 +10,7 @@ module.exports = {
 	 * @param  {String} data
 	 */
 	respond: function respond(res, code, data) {
-		// res.writeHead(code);
-		res.end(data || http.STATUS_CODES[code]);
+		res.send(code, data || http.STATUS_CODES[code]);
 	},
 
   json: function json(res, code, data) {
