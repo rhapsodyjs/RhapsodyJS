@@ -17,6 +17,7 @@ var Rhapsody = function Rhapsody(options) {
   this.config = {
     database: require(path.join(options.root, '/config/database')),
     defaults: require(path.join(options.root, '/config/defaults')),
+    session: require(path.join(options.root, '/config/session')),
     options: options
   };
 
@@ -35,7 +36,7 @@ Rhapsody.prototype = {
   /**
    * Returns the serverModel or the whole model
    * @param  {String} modelName The name of the model
-   * @param  {[Boolean]} full     Optional. Makes return the whole model
+   * @param  {Boolean} full     Optional. Makes return the whole model
    * @return {Model}
    */
   requireModel: function requireModel(modelName, full) {
@@ -45,6 +46,9 @@ Rhapsody.prototype = {
     return this.models[modelName].serverModel;
   },
 
+  /**
+   * Configure the server before open it
+   */
   configure: function configure() {
     //If database is enabled, configure it
     if(this.config.database.active) {
@@ -60,18 +64,16 @@ Rhapsody.prototype = {
       this.generateModels(this, this.config.options.build);
     }
 
-    //Saves a copy of this to use inside this.app.configure()
-    var self = this;
-
-    //Configure express options
-    this.app.configure(function() {
-      self.app.use(self.express.json()); //Parses the request body to JSON
-      self.app.use(self.express.cookieParser(self.config.defaults.cookies.secret)); //Actives cookie support
-      self.app.use(self.express.cookieSession({secret: self.config.defaults.cookies.sessionSecret})); //Actives session support
-      self.app.engine(self.config.defaults.viewEngine, engines[self.config.defaults.viewEngine]); //Set the default render engine module
-      self.app.use('/static', self.express.static(self.root + '/static'));
-      self.app.use('/backboneModels', self.express.static(self.root + '/backboneModels'));
-    });
+    //Configure express
+    this.app.use(this.express.json()); //Parses the request body to JSON
+    this.app.use(this.express.cookieParser(this.config.session.cookiesSecret)); //Actives cookie support
+    this.app.use(this.express.cookieSession({secret: this.config.session.sessionSecret})); //Actives session support
+    this.app.engine(this.config.defaults.viewEngine, engines[this.config.defaults.viewEngine]); //Set the default render engine module
+    this.app.use(this.app.router); //Use the custom routes above the static and backbone-models
+    this.app.use('/static', this.express.static(this.root + '/static')); //Static files should be here
+    //Backbone models should be here for facility
+    //the generated models will be in /backbone-models/gen/ModelName.js
+    this.app.use('/backbone-models', this.express.static(this.root + '/backbone-models'));
 
     //Configure the routes
     this.router.routeControllers(this.app);
@@ -80,7 +82,7 @@ Rhapsody.prototype = {
     }
   },
 
-  open: function(callback) {
+  open: function open(callback) {
     //Configure the server before run it
     this.configure();
 
@@ -93,7 +95,7 @@ Rhapsody.prototype = {
     }
   },
 
-  close: function() {
+  close: function close() {
     this.server.close();
     this.log.warn('Server closed');
   }

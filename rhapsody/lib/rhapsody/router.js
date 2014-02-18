@@ -61,8 +61,8 @@ Router.prototype = {
           if(files.indexOf('data') !== -1) {
             throw {message: 'A first-level controller can\'t be named "data"', name: 'InvalidControllerName'};
           }
-          if(files.indexOf('backboneModels') !== -1) {
-            throw {message: 'A first-level controller can\'t be named "backboneModels"', name: 'InvalidControllerName'};
+          if(files.indexOf('backbone-models') !== -1) {
+            throw {message: 'A first-level controller can\'t be named "backbone-models"', name: 'InvalidControllerName'};
           }
 
         }
@@ -129,8 +129,8 @@ Router.prototype = {
           if(rootViewName ===  'data') {
             throw {message: 'A root view controller can\'t be named "data"', name: 'InvalidViewName'};
           }
-          if(rootViewName === 'backboneModels') {
-            throw {message: 'A root view controller can\'t be named "backboneModels"', name: 'InvalidViewName'};
+          if(rootViewName === 'backbone-models') {
+            throw {message: 'A root view controller can\'t be named "backbone-models"', name: 'InvalidViewName'};
           }
 
           this.bind(v, view, controllerInfo, subs, '/' + rootViewName);

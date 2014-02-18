@@ -34,12 +34,12 @@ var generateModels = function generateModels(app, buildBackboneModels) {
   //If the Backbone models are going to be generated
   // clean where they'll be saved
   if(buildBackboneModels) {
-    fs.removeSync(path.join(app.root, '/backboneModels/gen/'), function (err) {
+    fs.removeSync(path.join(app.root, '/backbone-models/gen/'), function (err) {
       if(err) {
         throw err;
       }
     });
-    fs.mkdirSync(path.join(app.root, '/backboneModels/gen/'), function (err) {
+    fs.mkdirSync(path.join(app.root, '/backbone-models/gen/'), function (err) {
       if(err) {
         throw err;
       }
@@ -170,7 +170,7 @@ var generateClientModel = function generateClientModel(modelName, clientDefaults
     modelData: JSON.stringify(clientModel)
   });
 
-  var modelPath = path.join(app.root, '/backboneModels/gen/' + modelName + '.js');
+  var modelPath = path.join(app.root, '/backbone-models/gen/' + modelName + '.js');
 
   //Remove if the Backbone.Model already exists
   fs.remove(modelPath, function(err) {

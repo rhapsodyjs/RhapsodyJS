@@ -12,10 +12,10 @@ module.exports = {
     allowREST: true
   },
 
-  cookies : {
-    secret: 'rhapsody',
-    sessionSecret: 'rhapsody'
-  },
 
+  /**
+   * The default view engine can be any of:
+   * https://github.com/visionmedia/consolidate.js/#supported-template-engines
+   */
   viewEngine: 'ejs'
 };
