@@ -27,7 +27,7 @@ Router.prototype = {
     this.routeSingleController({
       path: path.join(this.rhapsody.root, '/app/controllers/' + this.rhapsody.config.defaults.routes.mainController),
       subs: []
-    }, this.rhapsody.config.defaults.routes.mainController);
+    }, true);
 
     //Create all the other routes based on BFS
     var queue = [],
@@ -68,12 +68,12 @@ Router.prototype = {
 
         }
 
+        //Read all subcontrollers and put in on the queue to be routed
         files.forEach(function(file) {
-          //Read all subcontrollers and put in on the queue to be routed
           if(folderRegex.test(file)) {
-
             var newPath = currentController.path + '/controllers/' + file,
                 newSubs = _.cloneDeep(currentController.subs);
+            
             newSubs.push(file);
 
             var newSubController = {
@@ -91,7 +91,6 @@ Router.prototype = {
           throw e;
         }
       }
-
     }
 
   },
@@ -102,26 +101,19 @@ Router.prototype = {
    * @param {String} serverRoot If it's routing the server root, import serverRoot controller
    */
   routeSingleController: function routeSingleController(controllerInfo, serverRoot) {
-    var isServerRoot = typeof serverRoot !== 'undefined';
-
-    if(isServerRoot) {
-      var controller = require(path.join(controllerInfo.path, '/' + serverRoot));
-    }
-    else {
-      var controller = require(path.join(controllerInfo.path, '/' + controllerInfo.subs[controllerInfo.subs.length - 1]));
-    }
+    var controller = require(controllerInfo.path + '/');
 
     var views = controller.views,
         subs = controllerInfo.subs.join('/');
 
-    for(var v in views) {
-      if(views.hasOwnProperty(v)) {
-        var view = views[v];
+    for(var viewName in views) {
+      if(views.hasOwnProperty(viewName)) {
+        var view = views[viewName];
 
         //If it's routing the server root, must change
-        if(isServerRoot) {
+        if(serverRoot) {
           //Workaround for when a root view uses custom verb
-          var rootViewAction = v.split(':');
+          var rootViewAction = viewName.split(':');
           var rootViewName = (rootViewAction.length == 1 ? rootViewAction[0] : rootViewAction[1]);
 
           if(rootViewName === 'static') {
@@ -134,17 +126,17 @@ Router.prototype = {
             throw {message: 'A root view controller can\'t be named "backbone-models"', name: 'InvalidViewName'};
           }
 
-          this.bindView(v, view, controllerInfo, subs, '/' + rootViewName);
+          this.bindView(viewName, view, controllerInfo, subs, '/' + rootViewName);
         }
         else {
-          this.bindView(v, view, controllerInfo, subs);
+          this.bindView(viewName, view, controllerInfo, subs);
         }
 
       }
     }
 
 
-    //Routes the controller root
+    //Routes the main view of the controller
     this.bindView(controller.mainView || this.rhapsody.config.defaults.routes.mainView, 
     views[controller.mainView || this.rhapsody.config.defaults.routes.mainView],
     controllerInfo,
@@ -225,7 +217,7 @@ Router.prototype = {
    * @param  {Object} view The view object
    * @return {Function}      The function to be binded
    */
-  extractFunction: function(view, controllerInfo) {
+  extractFunction: function extractFunction(view, controllerInfo) {
     //If it's a function, just return it
     if(typeof view === 'function') {
       return view;
