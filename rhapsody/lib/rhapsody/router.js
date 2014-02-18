@@ -162,7 +162,8 @@ Router.prototype = {
    */
   bindView: function bindView(viewName, view, controllerInfo, subs, routingPath) {
     var viewPath,
-        verb;
+        verb,
+        params;
 
     //Check if the view has a custom verb
     //If not, set is as GET
@@ -179,21 +180,62 @@ Router.prototype = {
     // The URL that's gonna be routed
     routingPath = routingPath || '/' + subs + '/' + viewPath;
 
-    //If the path accept parameters
+    //The function that will be binded to the route
+    var bindedFuncion;
+
+    //If the view accept options
     if(view != null && typeof view === 'object') {
-      routingPath += '/' + view.params.join('/');
-      this.app[verb](routingPath, view.action);
+
+      //If the path accepts parameters, put it on the URL
+      if(typeof view.params !== 'undefined') {
+        params = view.params.join('/');
+        routingPath += '/' + params;
+      }
+
+      //Extract the function to be binded
+      bindedFuncion = this.extractFunction(view.action, controllerInfo);
+
+      //Finally binds the path
+      this.app[verb](routingPath, bindedFuncion);
+
+      //If the view has customRoutes
+      if(typeof view.customRoutes !== 'undefined') {
+        var customRoutes = view.customRoutes;
+        //The user can pass a single custom route or an array
+        //If a single route is passed, make it an array
+        if(!_.isArray(customRoutes)) {
+          customRoutes = [customRoutes];
+        }
+        for(var i = 0; i < customRoutes.length; i++) {
+          var pathToBeRouted = customRoutes[i] + '/' + params;
+          //Binds the custom route
+          this.app[verb](pathToBeRouted, bindedFuncion);
+        }
+      }
     }
-    //If the path doesn't accept parameters
-    else if(typeof view === 'function') {
-      this.app[verb](routingPath, view);
+
+    //If the view doesn't accept options, extract the function
+    else {
+      this.app[verb](routingPath, this.extractFunction(view, controllerInfo));
     }
-    //If it's the path to a static file
+  },
+
+  /**
+   * Extract the function to be binded of a view
+   * @param  {Object} view The view object
+   * @return {Function}      The function to be binded
+   */
+  extractFunction: function(view, controllerInfo) {
+    //If it's a function, just return it
+    if(typeof view === 'function') {
+      return view;
+    }
+    //If it's just the path to a static file, send it
     else if(typeof view === 'string') {
       var realPath = controllerInfo.path + '/views/' + view;
-      this.app[verb](routingPath, function(req, res) {
+      return function(req, res) {
         res.sendfile(realPath);
-      });
+      };
     }
   },
 
