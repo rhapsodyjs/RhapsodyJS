@@ -70,8 +70,7 @@ module.exports = {
 
       options: {
         allowREST: true,
-        middlewares: [],
-        urlRoot: false
+        middlewares: []
       }
     };
 
@@ -99,7 +98,7 @@ module.exports = {
     });
 
     try {
-      fs.writeFile(path.join(appPath, '/models/' + modelName + '.js'), modelString, function(err) {
+      fs.writeFile(path.join(appPath, '/app/models/' + modelName + '.js'), modelString, function(err) {
         if(err) {
           return Logger.error(err);
         }

@@ -20,7 +20,7 @@ var Post = {
 	},
 
 	options: {
-		allowREST: false,
+		allowREST: true,
 		middlewares: []
 	}
 };

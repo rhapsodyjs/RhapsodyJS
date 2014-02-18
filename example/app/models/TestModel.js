@@ -9,8 +9,7 @@ var TestModel = {
 	"serverMethods": {},
 	"options": {
 		"allowREST": true,
-		"middlewares": [],
-		"urlRoot": false
+		"middlewares": []
 	}
 };
 

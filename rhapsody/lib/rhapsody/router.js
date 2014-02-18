@@ -2,7 +2,8 @@
 
 var fs = require('fs'),
     _ = require('lodash'),
-    responses = require('./responses');
+    responses = require('./responses'),
+    path = require('path');
 
 /**
  * Gotta remember that:
@@ -20,11 +21,11 @@ Router.prototype = {
   /**
    * Create all the controller routes
    */
-  routeControllers: function routeController() {    
+  routeControllers: function routeController() {
 
     // Define the main controller as the root of the server
     this.routeSingleController({
-      path: this.rhapsody.root + '/controllers/' + this.rhapsody.config.defaults.routes.mainController,
+      path: path.join(this.rhapsody.root, '/app/controllers/' + this.rhapsody.config.defaults.routes.mainController),
       subs: []
     }, this.rhapsody.config.defaults.routes.mainController);
 
@@ -36,7 +37,7 @@ Router.prototype = {
         files;
 
     queue.push({
-      path: this.rhapsody.root, // The path for the controller folder
+      path: path.join(this.rhapsody.root, '/app'), // The path for the controller folder
       subs: []    // The subpaths to be routed (like: if the URL is localhost/controller/subcontroller, the subs gonna be ['controller', 'subcontroller'])
     });
 
@@ -50,7 +51,7 @@ Router.prototype = {
 
       try {
         //Read all the files and folders of current 'controllers' directory 
-        files = fs.readdirSync(currentController.path + '/controllers');
+        files = fs.readdirSync(path.join(currentController.path, '/controllers'));
 
         if(exploringFirstLevelControllers) {
           exploringFirstLevelControllers = false;
@@ -104,10 +105,10 @@ Router.prototype = {
     var isServerRoot = typeof serverRoot !== 'undefined';
 
     if(isServerRoot) {
-      var controller = require(controllerInfo.path + '/' + serverRoot);
+      var controller = require(path.join(controllerInfo.path, '/' + serverRoot));
     }
     else {
-      var controller = require(controllerInfo.path + '/' + controllerInfo.subs[controllerInfo.subs.length - 1]);
+      var controller = require(path.join(controllerInfo.path, '/' + controllerInfo.subs[controllerInfo.subs.length - 1]));
     }
 
     var views = controller.views,
@@ -133,10 +134,10 @@ Router.prototype = {
             throw {message: 'A root view controller can\'t be named "backbone-models"', name: 'InvalidViewName'};
           }
 
-          this.bind(v, view, controllerInfo, subs, '/' + rootViewName);
+          this.bindView(v, view, controllerInfo, subs, '/' + rootViewName);
         }
         else {
-          this.bind(v, view, controllerInfo, subs);
+          this.bindView(v, view, controllerInfo, subs);
         }
 
       }
@@ -144,7 +145,7 @@ Router.prototype = {
 
 
     //Routes the controller root
-    this.bind(controller.mainView || this.rhapsody.config.defaults.routes.mainView, 
+    this.bindView(controller.mainView || this.rhapsody.config.defaults.routes.mainView, 
     views[controller.mainView || this.rhapsody.config.defaults.routes.mainView],
     controllerInfo,
     subs,
@@ -152,14 +153,14 @@ Router.prototype = {
   },
 
   /**
-   * Binds a route
+   * Binds a route of a view
    * @param  {String} viewName        The name of the view. Optionally containing its verb
    * @param  {*} view                 A string, object or function with the view
    * @param  {Object} controllerInfo  Contains the subs and the path for the controller
    * @param  {String} subs            The subpaths to this view
    * @param  {String} routingPath     Optional. The path that's going to be routed.
    */
-  bind: function bind(viewName, view, controllerInfo, subs, routingPath) {
+  bindView: function bindView(viewName, view, controllerInfo, subs, routingPath) {
     var viewPath,
         verb;
 
@@ -200,109 +201,116 @@ Router.prototype = {
    * Binds the routes for REST access
    */
   routeModelsREST: function routeModelsREST() {
-    for(var modelName in this.rhapsody.models) {
-      var model = this.rhapsody.models[modelName],
-          mongoModel = model.serverModel,
-          modelURL = '/data/' + modelName;
 
-      //If the user specified a custom urlRoot, use it
-      //otherwise, use /data/ModelName
-      if(typeof model.options !== 'undefined' && model.options.urlRoot) {
-        modelURL = model.options.urlRoot;
+    /**
+     * Response codes based on
+     * http://developer.yahoo.com/social/rest_api_guide/http-response-codes.html
+     */
+    
+    /**
+     * TODO:
+     * 401 response code if access to model needs authentication
+     */
+    
+    /* CREATE */
+    this.app.post('/data/:model', function create(req, res) {
+      var mongoModel = Rhapsody.requireModel(req.params.model);
+
+      if(!mongoModel) {
+        return responses.respond(res, 400); //Malformed syntax or a bad query
       }
 
-      //Test if the current model didn't disallowed REST URLs
-      if((typeof model.options === 'undefined' || typeof model.options.allowREST === 'undefined') || model.options.allowREST) {
+      var dataToCreate = req.body;
+      //Creates the new data and populates with the post fields
+      var newData = new mongoModel(dataToCreate);
+      newData.save(function createData(err) {
+        if(err) {
+          if(err.name === 'ValidationError') {
+            responses.respond(res, 400); //Malformed syntax or a bad query
+          }
+          responses.respond(res, 500); //Internal server error
+        }
+        else {
+         responses.json(res, 201, newData); //Sucessful creation
+        }
+      });
+    });
 
-        /**
-         * Response codes based on
-         * http://developer.yahoo.com/social/rest_api_guide/http-response-codes.html
-         */
-        
-        /**
-         * TODO:
-         * 401 response code if access to model needs authentication
-         */
-        
-        /* CREATE */
-        this.app.post(modelURL, function create(req, res) {
-          var dataToCreate = req.body;
-          //Creates the new data and populates with the post fields
-          var newData = new mongoModel(dataToCreate);
-          newData.save(function createData(err) {
-            if(err) {
-              if(err.name === 'ValidationError') {
-                responses.respond(res, 400); //Malformed syntax or a bad query
-              }
-              responses.respond(res, 500); //Internal server error
-            }
-            else {
-             responses.json(res, 201, newData); //Sucessful creation
-            }
-          });
-        });
+    /* READ */
+    this.app.get('/data/:model/:id?', function read(req, res) {
+      var mongoModel = Rhapsody.requireModel(req.params.model);
 
-        /* READ */
-        this.app.get(modelURL + '/:id?', function read(req, res) {
-          //If id not specified, return all data from the model
-          if(typeof req.params.id === 'undefined') {
-            mongoModel.find({}, function readAllData(err, data) {
-              if(err) {
-                responses.respond(res, 500); //Internal server error
-              }
-              else {
-                responses.json(res, 200, data); //No error, operation successful
-              }
-            });
+      if(!mongoModel) {
+        return responses.respond(res, 400); //Malformed syntax or a bad query
+      }
+
+      //If id not specified, return all data from the model
+      if(typeof req.params.id === 'undefined') {
+        mongoModel.find({}, function readAllData(err, data) {
+          if(err) {
+            responses.respond(res, 500); //Internal server error
           }
           else {
-            mongoModel.findOne({_id: req.params.id}, function readData(err, data) {
-              if(err) {
-                responses.respond(res, 500); //Internal server error
-              }
-              else {
-                if(data === null) {
-                  responses.respond(res, 404); //Resource not found
-                }
-                else {
-                  responses.json(res, 200, data); //No error, operation successful
-                }
-              }
-            });
+            responses.json(res, 200, data); //No error, operation successful
           }
         });
-
-        /* UPDATE */
-        this.app.put(modelURL + '/:id', function update(req, res) {
-          var dataToUpdate = req.body;
-          mongoModel.update({_id: req.params.id}, dataToUpdate, function updateData(err, data) {
-            if(err) {
-              if(err.name === 'ValidationError') {
-                responses.respond(res, 400); //Malformed syntax or a bad query
-              }
-              responses.respond(res, 500); //Status code for service error on server
+      }
+      else {
+        mongoModel.findOne({_id: req.params.id}, function readData(err, data) {
+          if(err) {
+            responses.respond(res, 500); //Internal server error
+          }
+          else {
+            if(data === null) {
+              responses.respond(res, 404); //Resource not found
             }
             else {
-              responses.respond(res, 202); //The request was received
+              responses.json(res, 200, data); //No error, operation successful
             }
-          });
+          }
         });
+      }
+    });
 
-        /* DELETE */
-        this.app.del(modelURL + '/:id', function del(req, res) {
-          mongoModel.remove({_id: req.params.id}, function deleteData(err) {
-            if(err) {
-              responses.respond(res, 500); //Status code for service error on server
-            }
-            else {
-              responses.respond(res, 202); //The request was received
-            }
-          });
-        });
+    /* UPDATE */
+    this.app.put('/data/:model/:id', function update(req, res) {
+      var mongoModel = Rhapsody.requireModel(req.params.model);
 
+      if(!mongoModel) {
+        return responses.respond(res, 400); //Malformed syntax or a bad query
       }
 
-    }
+      var dataToUpdate = req.body;
+      mongoModel.update({_id: req.params.id}, dataToUpdate, function updateData(err, data) {
+        if(err) {
+          if(err.name === 'ValidationError') {
+            responses.respond(res, 400); //Malformed syntax or a bad query
+          }
+          responses.respond(res, 500); //Status code for service error on server
+        }
+        else {
+          responses.respond(res, 202); //The request was received
+        }
+      });
+    });
+
+    /* DELETE */
+    this.app.del('/data/:model/:id', function del(req, res) {
+      var mongoModel = Rhapsody.requireModel(req.params.model);
+
+      if(!mongoModel) {
+        return responses.respond(res, 400); //Malformed syntax or a bad query
+      }
+
+      mongoModel.remove({_id: req.params.id}, function deleteData(err) {
+        if(err) {
+          responses.respond(res, 500); //Status code for service error on server
+        }
+        else {
+          responses.respond(res, 202); //The request was received
+        }
+      });
+    });
   }
 };
 

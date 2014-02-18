@@ -7,8 +7,8 @@ var fs = require('fs-extra'),
 /**
  * Models can have the following attributes:
  * - attributes (just type, or the following)
- * 		- type (http://mongoosejs.com/docs/schematypes.html)
- * 		- serverValidations (must be in sharedMethods)
+ *    - type (http://mongoosejs.com/docs/schematypes.html)
+ *    - serverValidations (must be in sharedMethods)
  *    - default
  *    - required
  * - sharedMethods
@@ -16,9 +16,8 @@ var fs = require('fs-extra'),
  *   - validate (the used methods must be in client methods or shared methods)
  * - serverMethods
  * - options
- * 		- allowREST
- * 		- middlewares
- *    - urlRoot (for a custom URL root)
+ *    - allowREST
+ *    - middlewares
  *
  * The Backbone model generated is compatible with RequireJS, CommonJS and global scope
  */
@@ -29,24 +28,25 @@ var fs = require('fs-extra'),
 var generateModels = function generateModels(app, buildBackboneModels) {
   var jsFileRegex = /^\w+\.js$/i;
 
-	var modelsPath = path.join(app.root, '/models');
+  var modelsPath = path.join(app.root, '/app/models'),
+      backboneModelsPath = path.join(app.root, '/app/backbone-models/gen/');
 
   //If the Backbone models are going to be generated
   // clean where they'll be saved
   if(buildBackboneModels) {
-    fs.removeSync(path.join(app.root, '/backbone-models/gen/'), function (err) {
+    fs.removeSync(backboneModelsPath, function (err) {
       if(err) {
         throw err;
       }
     });
-    fs.mkdirSync(path.join(app.root, '/backbone-models/gen/'), function (err) {
+    fs.mkdirSync(backboneModelsPath, function (err) {
       if(err) {
         throw err;
       }
     });
   }
 
-	fs.readdirSync(modelsPath).forEach(function(file) {
+  fs.readdirSync(modelsPath).forEach(function(file) { 
     if(jsFileRegex.test(file)) {
 
       var serverAttributes = {},
@@ -79,11 +79,11 @@ var generateModels = function generateModels(app, buildBackboneModels) {
         }
       }
 
-      var serverModel = generateServerModel(modelName, serverAttributes, serverValidations, requiredModel, app);
+      var serverModel = generateServerModel(app, modelName, serverAttributes, serverValidations, requiredModel);
 
       //If, during the build, the Backbone models must be generated
       if(buildBackboneModels) {
-        generateClientModel(modelName, clientDefaults, requiredModel, app);
+        generateClientModel(app, modelName, clientDefaults, requiredModel);
       }
 
       app.models[modelName] = {
@@ -92,7 +92,7 @@ var generateModels = function generateModels(app, buildBackboneModels) {
       }
 
     }
-	});
+  });
 };
 
 /**
@@ -104,7 +104,7 @@ var generateModels = function generateModels(app, buildBackboneModels) {
  * @param {Rhapsody} app A Rhapsody app
  * @return {Mongoose Model}
  */
-var generateServerModel = function generateServerModel(modelName, serverAttributes, serverValidations, requiredModel, app) {
+var generateServerModel = function generateServerModel(app, modelName, serverAttributes, serverValidations, requiredModel) {
   var attr,
       validation,
       validationArray;
@@ -137,18 +137,8 @@ var generateServerModel = function generateServerModel(modelName, serverAttribut
  * @param  {Object} requiredModel  The generic model
  * @param  {Rhapsody} app            A Rhapsody app
  */
-var generateClientModel = function generateClientModel(modelName, clientDefaults, requiredModel, app) {
-  var urlRoot;
-
-  //If the user specified a custom urlRoot, use it
-  //otherwise, use /data/ModelName
-  if(typeof requiredModel.options !== 'undefined' && requiredModel.options.urlRoot) {
-    urlRoot = requiredModel.options.urlRoot;
-  }
-  else {
-    urlRoot = '/data/' + modelName;
-  }
-
+var generateClientModel = function generateClientModel(app, modelName, clientDefaults, requiredModel) {
+  var urlRoot = '/data/' + modelName;
 
   //Possible fields of a Backbone.Model
   var clientModel = {
@@ -170,20 +160,14 @@ var generateClientModel = function generateClientModel(modelName, clientDefaults
     modelData: JSON.stringify(clientModel)
   });
 
-  var modelPath = path.join(app.root, '/backbone-models/gen/' + modelName + '.js');
+  var modelPath = path.join(app.root, '/app/backbone-models/gen/' + modelName + '.js');
 
-  //Remove if the Backbone.Model already exists
-  fs.remove(modelPath, function(err) {
+
+  //Create the Backbone model file
+  fs.writeFile(modelPath, backboneModelString, function(err) {
     if(err) {
       throw err;
     }
-    //Then create it again
-    fs.writeFile(modelPath, backboneModelString, function(err) {
-      if(err) {
-        throw err;
-      }
-    });
-
   });
 };
 
