@@ -5,14 +5,18 @@ var path = require('path'),
 
 var Rhapsody = function Rhapsody(options) {
 
-  var Router = require('./rhapsody/router');
+  var ControllerRouter = require('./rhapsody/router/controllerRouter');
+  var ModelRouter = require('./rhapsody/router/restRouter');
 
   this.express = require('express');
   this.app = this.express();
   
   this.root = options.root;
 
-  this.router = new Router(this);
+  this.router = {
+    controllerRouter: new ControllerRouter(this),
+    modelRouter: new ModelRouter(this)
+  };
 
   this.config = {
     database: require(path.join(options.root, '/app/config/database')),
@@ -82,9 +86,9 @@ Rhapsody.prototype = {
     this.app.use(this.config.error.error404Handler);
 
     //Configure the routes
-    this.router.routeControllers(this.app);
+    this.router.controllerRouter.route();
     if(this.config.defaults.routes.allowREST) {
-      this.router.routeModelsREST(this.app);
+      this.router.modelRouter.route();
     }
   },
 

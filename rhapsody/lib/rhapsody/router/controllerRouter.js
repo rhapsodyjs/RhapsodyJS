@@ -2,7 +2,7 @@
 
 var fs = require('fs'),
     _ = require('lodash'),
-    responses = require('./responses'),
+    responses = require('../responses'),
     path = require('path');
 
 /**
@@ -11,17 +11,17 @@ var fs = require('fs'),
  *   - A first-level controller should not have the same name of a view of mainController
  */
 
-var Router = function(rhapsodyApp) {
+var ControllerRouter = function(rhapsodyApp) {
   this.app = rhapsodyApp.app;
   this.rhapsody = rhapsodyApp;
 }
 
-Router.prototype = {
+ControllerRouter.prototype = {
 
   /**
    * Create all the controller routes
    */
-  routeControllers: function routeController() {
+  route: function route() {
 
     // Define the main controller as the root of the server
     this.routeSingleController({
@@ -126,10 +126,10 @@ Router.prototype = {
             throw {message: 'A root view controller can\'t be named "backbone-models"', name: 'InvalidViewName'};
           }
 
-          this.bindView(viewName, view, controllerInfo, subs, '/' + rootViewName);
+          this.bind(viewName, view, controllerInfo, subs, '/' + rootViewName);
         }
         else {
-          this.bindView(viewName, view, controllerInfo, subs);
+          this.bind(viewName, view, controllerInfo, subs);
         }
 
       }
@@ -137,7 +137,7 @@ Router.prototype = {
 
 
     //Routes the main view of the controller
-    this.bindView(controller.mainView || this.rhapsody.config.defaults.routes.mainView, 
+    this.bind(controller.mainView || this.rhapsody.config.defaults.routes.mainView, 
     views[controller.mainView || this.rhapsody.config.defaults.routes.mainView],
     controllerInfo,
     subs,
@@ -152,7 +152,7 @@ Router.prototype = {
    * @param  {String} subs            The subpaths to this view
    * @param  {String} routingPath     Optional. The path that's going to be routed.
    */
-  bindView: function bindView(viewName, view, controllerInfo, subs, routingPath) {
+  bind: function bind(viewName, view, controllerInfo, subs, routingPath) {
     var viewPath,
         verb,
         params;
@@ -229,123 +229,7 @@ Router.prototype = {
         res.sendfile(realPath);
       };
     }
-  },
-
-  /**
-   * Binds the routes for REST access
-   */
-  routeModelsREST: function routeModelsREST() {
-
-    /**
-     * Response codes based on
-     * http://developer.yahoo.com/social/rest_api_guide/http-response-codes.html
-     */
-    
-    /**
-     * TODO:
-     * 401 response code if access to model needs authentication
-     */
-    
-    /* CREATE */
-    this.app.post('/data/:model', function create(req, res) {
-      var mongoModel = Rhapsody.requireModel(req.params.model);
-
-      if(!mongoModel) {
-        return responses.respond(res, 400); //Malformed syntax or a bad query
-      }
-
-      var dataToCreate = req.body;
-      //Creates the new data and populates with the post fields
-      var newData = new mongoModel(dataToCreate);
-      newData.save(function createData(err) {
-        if(err) {
-          if(err.name === 'ValidationError') {
-            responses.respond(res, 400); //Malformed syntax or a bad query
-          }
-          responses.respond(res, 500); //Internal server error
-        }
-        else {
-         responses.json(res, 201, newData); //Sucessful creation
-        }
-      });
-    });
-
-    /* READ */
-    this.app.get('/data/:model/:id?', function read(req, res) {
-      var mongoModel = Rhapsody.requireModel(req.params.model);
-
-      if(!mongoModel) {
-        return responses.respond(res, 400); //Malformed syntax or a bad query
-      }
-
-      //If id not specified, return all data from the model
-      if(typeof req.params.id === 'undefined') {
-        mongoModel.find({}, function readAllData(err, data) {
-          if(err) {
-            responses.respond(res, 500); //Internal server error
-          }
-          else {
-            responses.json(res, 200, data); //No error, operation successful
-          }
-        });
-      }
-      else {
-        mongoModel.findOne({_id: req.params.id}, function readData(err, data) {
-          if(err) {
-            responses.respond(res, 500); //Internal server error
-          }
-          else {
-            if(data === null) {
-              responses.respond(res, 404); //Resource not found
-            }
-            else {
-              responses.json(res, 200, data); //No error, operation successful
-            }
-          }
-        });
-      }
-    });
-
-    /* UPDATE */
-    this.app.put('/data/:model/:id', function update(req, res) {
-      var mongoModel = Rhapsody.requireModel(req.params.model);
-
-      if(!mongoModel) {
-        return responses.respond(res, 400); //Malformed syntax or a bad query
-      }
-
-      var dataToUpdate = req.body;
-      mongoModel.update({_id: req.params.id}, dataToUpdate, function updateData(err, data) {
-        if(err) {
-          if(err.name === 'ValidationError') {
-            responses.respond(res, 400); //Malformed syntax or a bad query
-          }
-          responses.respond(res, 500); //Status code for service error on server
-        }
-        else {
-          responses.respond(res, 202); //The request was received
-        }
-      });
-    });
-
-    /* DELETE */
-    this.app.del('/data/:model/:id', function del(req, res) {
-      var mongoModel = Rhapsody.requireModel(req.params.model);
-
-      if(!mongoModel) {
-        return responses.respond(res, 400); //Malformed syntax or a bad query
-      }
-
-      mongoModel.remove({_id: req.params.id}, function deleteData(err) {
-        if(err) {
-          responses.respond(res, 500); //Status code for service error on server
-        }
-        else {
-          responses.respond(res, 202); //The request was received
-        }
-      });
-    });
   }
 };
 
-module.exports = Router;
+module.exports = ControllerRouter;
