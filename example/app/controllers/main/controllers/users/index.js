@@ -12,7 +12,10 @@ var UsersController = {
           console.log(err);
         }
         else {
-          res.render(__dirname + '/views/list.ejs', {users : users});
+          res.view({
+            name: 'list',
+            locals: {users : users}
+          });
         }
 
       });
@@ -23,6 +26,8 @@ var UsersController = {
       params: [':age'],
 
       action: function(req, res) {
+        console.log(req.app.get('views'));
+
         var User = Rhapsody.requireModel('User');
 
         User.find({age: req.params.age}, function foundUsers(err, user) {

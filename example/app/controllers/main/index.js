@@ -7,7 +7,9 @@ var MainController = {
 
     login: {
       action: function(req, res) {
-        res.render(__dirname + '/views/login.ejs');
+        res.view({
+          name: 'login'
+        });
       },
 
       customRoutes: ['/signup', '/enter']

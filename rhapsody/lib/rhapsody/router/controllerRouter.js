@@ -2,8 +2,8 @@
 
 var fs = require('fs'),
     _ = require('lodash'),
-    responses = require('../responses'),
-    path = require('path');
+    path = require('path'),
+    Response = require('./response');
 
 /**
  * Gotta remember that:
@@ -220,7 +220,9 @@ ControllerRouter.prototype = {
   extractFunction: function extractFunction(view, controllerInfo) {
     //If it's a function, just return it
     if(typeof view === 'function') {
-      return view;
+      return function(req, res) {
+        view(req, new Response(res, controllerInfo.path));
+      }
     }
     //If it's just the path to a static file, send it
     else if(typeof view === 'string') {
