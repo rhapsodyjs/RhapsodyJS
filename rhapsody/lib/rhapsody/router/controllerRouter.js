@@ -184,6 +184,15 @@ ControllerRouter.prototype = {
         routingPath += '/' + params;
       }
 
+      //If the path has middlewares
+      if(_.isArray(view.middlewares)) {
+        var middleware;
+        for(var i = 0; i < view.middlewares.length; i++) {
+          middleware = require(path.join(this.rhapsody.root, '/app/middlewares/' + view.middlewares[i]));
+          this.app[verb](routingPath, middleware);
+        }
+      }
+
       //Extract the function to be binded
       bindedFuncion = this.extractFunction(view.action, controllerInfo);
 

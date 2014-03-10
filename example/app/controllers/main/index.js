@@ -22,6 +22,7 @@ var MainController = {
 
     echo: {
       params: [':text'],
+      middlewares: ['first'],
       customRoutes: ['/return', '/answer'],
 
       action: function(req, res) {

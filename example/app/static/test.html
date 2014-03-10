@@ -4,42 +4,28 @@
 	<title>First Backbone test</title>
 	<script src="js/jquery.js"></script>
 	<script src="js/underscore.js"></script>
-	<script src="js/backbone.js"></script>
+  <script src="js/backbone.js"></script>
+  <script src="/backbone-models/gen/User.js"></script>
+  <script src="/backbone-models/gen/Comment.js"></script>
+	<script src="/backbone-models/gen/User.js"></script>
 
 	<script>
-	var UserModel,
-		  UserView,
-      CommentModel;
 
-	$(function() {
-		// UserModel = Backbone.Model.extend({
-		// 	idAttribute: '_id',
-		// 	defaults: {
-		// 		name: 'Name',
-		// 		age: 21
-		// 	},
-		// 	urlRoot: '/data/User'
-		// });
+  $(function() {
 
-    CommentModel = Backbone.Model.extend({
-      idAttribute: '_id',
-      urlRoot: '/data/Comment'
+    // var newComment = new CommentModel();
+    // newComment.save();
+
+    var newUser = new User({_id: '53021a5b7b7485ec10f5f39d'});
+    // var newUser = new UserModel();
+		newUser.fetch({
+      success: function() {
+        alert(newUser.get('name'));
+      },
+      error: function() {
+        alert('User can\'t be found.')
+      }
     });
-
-    var newComment = new CommentModel();
-    newComment.save();
-
-	    // var newUser = new UserModel({_id: '52fcca91c8c7b2fc0e2d50bf'});
-	    // var newUser = new UserModel();
-			// var newUser = new UserModel({_id: '52f64f756dc38be8134a9b18'});
-		// newUser.fetch({
-	 //      success: function() {
-	 //        alert(newUser.get('name'));
-	 //      },
-	 //      error: function() {
-	 //        alert('User can\'t be found.')
-	 //      }
-	    // });
 	    
     // newUser.save(this.attributes, {
     //   success: function() {
