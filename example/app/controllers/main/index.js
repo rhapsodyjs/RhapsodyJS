@@ -6,30 +6,31 @@ var MainController = {
     index: 'index.html',
 
     login: {
+      action: 'login.html',
+      middlewares: ['not-logged']
+    },
+
+    info: {
       action: function(req, res) {
         res.view({
-          name: 'login'
+          name: 'info',
+          locals: {
+            user: req.session.user
+          }
         });
       },
-
-      customRoutes: ['/signup', '/enter']
+      middlewares: ['logged']
     },
 
     'post:enter': function(req, res) {
-      console.log(req.body);
-      res.send(200);
-    },
-
-    echo: {
-      params: [':text'],
-      middlewares: ['first'],
-      customRoutes: ['/return', '/answer'],
-
-      action: function(req, res) {
-        res.end(req.params.text);
+      if(typeof req.body.user !== 'undefined') {
+        req.session.user = req.body.user;
+        res.redirect('/info');
+      }
+      else {
+        res.send(404);
       }
     }
-    
   }
 }
 

@@ -74,8 +74,11 @@ Rhapsody.prototype = {
 
     //Configure express
     this.app.use(this.express.json()); //Parses the request body to JSON
+    this.app.use(this.express.urlencoded()); //Actives URL encoded support
     this.app.use(this.express.cookieParser(this.config.session.cookiesSecret)); //Actives cookie support
-    this.app.use(this.express.cookieSession({secret: this.config.session.sessionSecret})); //Actives session support
+    this.app.use(this.express.session({ //Actives session support
+      secret: this.config.session.sessionSecret
+    }));
     this.app.set('view engine', this.config.defaults.viewEngine); //Set the default view engine
     this.app.engine(this.config.defaults.viewEngine, engines[this.config.defaults.viewEngine]); //Set the default render engine module
     this.app.use(this.app.router); //Use the custom routes above the static and backbone-models
