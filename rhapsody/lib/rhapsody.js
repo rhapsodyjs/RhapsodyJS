@@ -6,7 +6,7 @@ var path = require('path'),
 var Rhapsody = function Rhapsody(options) {
 
   var ControllerRouter = require('./rhapsody/router/controllerRouter');
-  var ModelRouter = require('./rhapsody/router/restRouter');
+  var ModelRouter = require('./rhapsody/router/modelRouter');
 
   this.express = require('express');
   this.app = this.express();

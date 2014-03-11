@@ -1,7 +1,8 @@
 'use strict';
 
 var responseUtils = require('../responseUtils'),
-    _ = require('lodash');
+    _ = require('lodash'),
+    path = require('path');
 
 /**
  * Binds the routes for REST access
@@ -12,17 +13,38 @@ var responseUtils = require('../responseUtils'),
  * 401 response code if access to model needs authentication
  */
   
-var RestRouter = function RestRouter(rhapsodyApp) {
+var ModelRouter = function ModelRouter(rhapsodyApp) {
   this.app = rhapsodyApp.app;
 };
 
-RestRouter.prototype = {
+ModelRouter.prototype = {
 
-  route: function() {
+  route: function route() {
+    this.bindMiddlewares();
     this.app.post('/data/:model', this.create);
     this.app.get('/data/:model/:id?', this.read);
     this.app.put('/data/:model/:id', this.update);
     this.app.del('/data/:model/:id', this.del);
+  },
+
+  bindMiddlewares: function bindMiddlewares() {
+    var modelName,
+        model,
+        middleware;
+
+    for(modelName in Rhapsody.models) {
+      model = Rhapsody.models[modelName];
+      //If the model has middlewares
+      if(typeof model.options !== 'undefined' && _.isArray(model.options.middlewares)) {
+        for(var i = 0; i < model.options.middlewares.length; i++) {
+          middleware = require(path.join(Rhapsody.root, '/app/middlewares/' + model.options.middlewares[i]));
+          this.app.post('/data/' + modelName, middleware);
+          this.app.get('/data/' + modelName + '/:id?', middleware);
+          this.app.put('/data/' + modelName + '/:id', middleware);
+          this.app.del('/data/' + modelName + '/:id', middleware);
+        }
+      }
+    }
   },
 
   create: function create(req, res) {
@@ -132,4 +154,4 @@ RestRouter.prototype = {
 
 };
 
-module.exports = RestRouter;
+module.exports = ModelRouter;

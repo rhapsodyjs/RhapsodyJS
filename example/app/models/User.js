@@ -33,7 +33,7 @@ var User = {
 
 	options: {
 		allowREST: true,
-		middlewares: []
+		middlewares: ['logged']
 	}
 };
 
