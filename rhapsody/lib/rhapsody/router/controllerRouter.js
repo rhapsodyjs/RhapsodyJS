@@ -101,10 +101,21 @@ ControllerRouter.prototype = {
    * @param {String} serverRoot If it's routing the server root, import serverRoot controller
    */
   routeSingleController: function routeSingleController(controllerInfo, serverRoot) {
+    //Requires the controller to be routed
     var controller = require(controllerInfo.path + '/');
 
     var views = controller.views,
         subs = controllerInfo.subs.join('/');
+
+    //If the controller has global middlewares
+    if(_.isArray(controller.middlewares)) {
+      var middleware;
+      for(var i = 0; i < controller.middlewares.length; i++) {
+        middleware = require(path.join(this.rhapsody.root, '/app/middlewares/' + controller.middlewares[i]));
+        //All verbs pass by the middleware
+        this.app.all('/' + subs + '/?*', middleware);
+      }
+    }
 
     for(var viewName in views) {
       if(views.hasOwnProperty(viewName)) {

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Admin page</title>
+	<script src="/static/js/jquery.js"></script>
+	<script src="/static/js/underscore.js"></script>
+	<script src="/static/js/backbone.js"></script>
+	<script src="/backbone-models/gen/User.js"></script>
+
+	<script>
+	$(function() {
+		var UserCollection = Backbone.Collection.extend({
+			model: User,
+			url: '/data/User'
+		});
+
+		var UserView = Backbone.View.extend({
+			template: _.template('<div><b>User:</b> <%= name %>, <b>Age:</b> <%= age %></div>'),
+			render: function() {
+				this.$el.html(this.template(this.model.toJSON()));
+				return this;
+			}
+		});
+
+		var UsersView = Backbone.View.extend({
+			el: 'body',
+			initialize: function() {
+				var render = this.render;
+				var addOne = this.addOne;
+				this.collection.on('fetch', render, this);
+				this.collection.on('reset', render, this)
+				this.collection.on('add', addOne, this);
+			},
+			render: function() {
+				this.addAll();
+				return this;
+			},
+			addAll: function() {
+				this.$el.empty();
+				this.collection.forEach(this.addOne, this);
+			},
+			addOne: function(user) {
+				var newUser = new UserView({model: user});
+				console.log(this);
+				this.$el.append(newUser.render().el);
+			}
+		});
+
+		var users = new UserCollection();
+
+		var usersView = new UsersView({
+			collection: users
+		});
+
+		users.fetch();
+	});
+	</script>
+</head>
+<body>
+
+</body>
+</html>
