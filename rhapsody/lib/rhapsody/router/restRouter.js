@@ -1,6 +1,7 @@
 'use strict';
 
-var responseUtils = require('../responseUtils');;
+var responseUtils = require('../responseUtils'),
+    _ = require('lodash');
 
 /**
  * Binds the routes for REST access
@@ -25,15 +26,15 @@ RestRouter.prototype = {
   },
 
   create: function create(req, res) {
-    var mongoModel = Rhapsody.requireModel(req.params.model);
+    var serverModel = Rhapsody.requireModel(req.params.model);
 
-    if(!mongoModel) {
+    if(!serverModel) {
       return responseUtils.respond(res, 400); //Malformed syntax or a bad query
     }
 
     var dataToCreate = req.body;
     //Creates the new data and populates with the post fields
-    var newData = new mongoModel(dataToCreate);
+    var newData = new serverModel(dataToCreate);
     newData.save(function createData(err) {
       if(err) {
         if(err.name === 'ValidationError') {
@@ -48,25 +49,32 @@ RestRouter.prototype = {
   },
 
   read: function read(req, res) {
-    var mongoModel = Rhapsody.requireModel(req.params.model);
+    var fullModel = Rhapsody.requireModel(req.params.model, true);
 
-    if(!mongoModel) {
+    if(!fullModel) {
       return responseUtils.respond(res, 400); //Malformed syntax or a bad query
     }
 
+    var serverModel = fullModel.serverModel,
+        restrictedAttributes = Object.keys(fullModel.restrictedAttributes);
+
     //If id not specified, return all data from the model
     if(typeof req.params.id === 'undefined') {
-      mongoModel.find({}, function readAllData(err, data) {
+      serverModel.find({}, function readAllData(err, data) {
         if(err) {
           responseUtils.respond(res, 500); //Internal server error
         }
         else {
-          responseUtils.json(res, 200, data); //No error, operation successful
+          //Gets the data without the restricted attributes
+          var filteredData = _.map(data, function(rawData) {
+            return _.omit(rawData.toObject(), restrictedAttributes);
+          });
+          responseUtils.json(res, 200, filteredData); //No error, operation successful
         }
       });
     }
     else {
-      mongoModel.findOne({_id: req.params.id}, function readData(err, data) {
+      serverModel.findOne({_id: req.params.id}, function readData(err, data) {
         if(err) {
           responseUtils.respond(res, 500); //Internal server error
         }
@@ -75,7 +83,9 @@ RestRouter.prototype = {
             responseUtils.respond(res, 404); //Resource not found
           }
           else {
-            responseUtils.json(res, 200, data); //No error, operation successful
+            //Gets the data without the restricted attributes
+            var filteredData = _.omit(data.toObject(), restrictedAttributes);
+            responseUtils.json(res, 200, filteredData); //No error, operation successful
           }
         }
       });
@@ -83,14 +93,14 @@ RestRouter.prototype = {
   },
 
   update: function update(req, res) {
-    var mongoModel = Rhapsody.requireModel(req.params.model);
+    var serverModel = Rhapsody.requireModel(req.params.model);
 
-    if(!mongoModel) {
+    if(!serverModel) {
       return responseUtils.respond(res, 400); //Malformed syntax or a bad query
     }
 
     var dataToUpdate = req.body;
-    mongoModel.update({_id: req.params.id}, dataToUpdate, function updateData(err, data) {
+    serverModel.update({_id: req.params.id}, dataToUpdate, function updateData(err, data) {
       if(err) {
         if(err.name === 'ValidationError') {
           responseUtils.respond(res, 400); //Malformed syntax or a bad query
@@ -104,13 +114,13 @@ RestRouter.prototype = {
   },
 
   del: function del(req, res) {
-    var mongoModel = Rhapsody.requireModel(req.params.model);
+    var serverModel = Rhapsody.requireModel(req.params.model);
 
-    if(!mongoModel) {
+    if(!serverModel) {
       return responseUtils.respond(res, 400); //Malformed syntax or a bad query
     }
 
-    mongoModel.remove({_id: req.params.id}, function deleteData(err) {
+    serverModel.remove({_id: req.params.id}, function deleteData(err) {
       if(err) {
         responseUtils.respond(res, 500); //Status code for service error on server
       }

@@ -11,6 +11,7 @@ var fs = require('fs-extra'),
  *    - serverValidations (must be in sharedMethods)
  *    - default
  *    - required
+ *    - restricted (won't be present in Backbone model and won't be sent via REST)
  * - sharedMethods
  * - clientMethods
  *   - validate (the used methods must be in client methods or shared methods)
@@ -54,26 +55,34 @@ var generateModels = function generateModels(app, buildBackboneModels) {
           clientDefaults = {},
           modelName = file.substring(0, file.length - 3),
           requiredModel = require(path.join(modelsPath, '/' + modelName)),
-          modelAttributes = requiredModel.attributes;
+          modelAttributes = requiredModel.attributes,
+          restrictedAttributes = {};
 
       for(var attr in modelAttributes) {
         //If the attribute has properties
         if(typeof modelAttributes[attr] === 'object' && modelAttributes[attr] != null) {
-          if(typeof modelAttributes[attr].serverValidations === 'undefined') {
-            serverAttributes[attr] = modelAttributes[attr];
-          }
+
+          //Creates a copy of the attributes without the serverValidations array and the restricted flag
+          serverAttributes[attr] = _.omit(modelAttributes[attr], ['serverValidations', 'restricted']);
+
           //If it has validations, save it
-          else {
-            //Creates a copy of the attributes without the serverValidations array
-            serverAttributes[attr] = _.omit(modelAttributes[attr], 'serverValidations');
+          if(typeof modelAttributes[attr].serverValidations !== 'undefined') {
             serverValidations[attr] = modelAttributes[attr].serverValidations;
           }
 
-          //Save the default value to use in generated client model
-          if(typeof modelAttributes[attr].default !== 'undefined') {
-            clientDefaults[attr] = modelAttributes[attr].default;
+          //If current attribute is restricted to the server
+          if(modelAttributes[attr].restricted) {
+            restrictedAttributes[attr] = true;
           }
+          else {
+            //Save the default value to use in generated client model if it's not a restricted attribute
+            if(typeof modelAttributes[attr].default !== 'undefined') {
+              clientDefaults[attr] = modelAttributes[attr].default;
+            }
+          }
+          
         }
+        //If it just has the type, just put it on the attributes
         else {
           serverAttributes[attr] = modelAttributes[attr];
         }
@@ -88,7 +97,8 @@ var generateModels = function generateModels(app, buildBackboneModels) {
 
       app.models[modelName] = {
         options: requiredModel.options,
-        serverModel: serverModel
+        serverModel: serverModel,
+        restrictedAttributes: restrictedAttributes
       }
 
     }
@@ -109,8 +119,10 @@ var generateServerModel = function generateServerModel(app, modelName, serverAtt
       validation,
       validationArray;
 
+  //For each attribute that needs validation
   for(attr in serverValidations) {
     validationArray = [];
+    //For each validation for that attribute
     for(validation in serverValidations[attr]) {
       //Get the validation function in the sharedMethods
       var validationFunction = requiredModel.sharedMethods[serverValidations[attr][validation]];
@@ -161,7 +173,6 @@ var generateClientModel = function generateClientModel(app, modelName, clientDef
   });
 
   var modelPath = path.join(app.root, '/app/backbone-models/gen/' + modelName + '.js');
-
 
   //Create the Backbone model file
   fs.writeFile(modelPath, backboneModelString, function(err) {

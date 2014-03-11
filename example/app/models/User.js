@@ -3,8 +3,13 @@ var User = {
 		name: String,
 		age: {
 			type: Number,
-			validations: ['notNegative']
-		}
+			serverValidations: ['notNegative']
+		},
+    password: {
+      type: String,
+      restricted: true,
+      required: true
+    }
 	},
 
 	sharedMethods: {

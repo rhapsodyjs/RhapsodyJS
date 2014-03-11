@@ -6,31 +6,34 @@
 	<script src="js/underscore.js"></script>
   <script src="js/backbone.js"></script>
   <script src="/backbone-models/gen/User.js"></script>
-  <script src="/backbone-models/gen/Comment.js"></script>
 
 	<script>
 
   $(function() {
 
-    var newUser = new User({_id: '53021a5b7b7485ec10f5f39d'});
-    // var newUser = new UserModel();
-		newUser.fetch({
+    // var newUser = new User({_id: '53021a5b7b7485ec10f5f39d'});
+    var newUser = new User({
+      name: 'RhapsodyJS test user',
+      age: 1,
+      password: 'test-password'
+    });
+		// newUser.fetch({
+  //     success: function() {
+  //       alert(newUser.get('name'));
+  //     },
+  //     error: function() {
+  //       alert('User can\'t be found.')
+  //     }
+  //   });
+	    
+    newUser.save(this.attributes, {
       success: function() {
-        alert(newUser.get('name'));
+        alert('Success !');
       },
       error: function() {
-        alert('User can\'t be found.')
+        alert('Error !');
       }
     });
-	    
-    // newUser.save(this.attributes, {
-    //   success: function() {
-    //     alert('Success !');
-    //   },
-    //   error: function() {
-    //     alert('Error !');
-    //   }
-    // });
 
 	});
 
