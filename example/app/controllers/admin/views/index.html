@@ -9,10 +9,6 @@
 
 	<script>
 	$(function() {
-		var UserCollection = Backbone.Collection.extend({
-			model: User,
-			url: '/data/User'
-		});
 
 		var UserView = Backbone.View.extend({
 			template: _.template('<div><b>User:</b> <%= name %>, <b>Age:</b> <%= age %></div>'),
