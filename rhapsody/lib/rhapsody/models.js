@@ -2,7 +2,8 @@
 
 var fs = require('fs-extra'),
     _ = require('lodash'),
-    path = require('path');
+    path = require('path'),
+    jsmin = require('jsmin').jsmin;
 
 /**
  * Models can have the following attributes:
@@ -164,13 +165,16 @@ var generateClientModel = function generateClientModel(app, modelName, clientDef
   clientModel = _.merge(clientModel, requiredModel.clientMethods);
 
   //Lodash template for Backbone.Model
-  var backboneModelTemplate = _.template('(function(){var <%= name %>=Backbone.Model.extend(<%= modelData %>);if(typeof module!==\'undefined\' && module.exports){module.exports=<%= name %>;}else if(typeof window.define===\'function\' && window.define.amd){define(function(){return <%= name %>;});}else{window.<%= name %>=<%= name %>;}}());');
+  var backboneModelTemplate = _.template(fs.readFileSync(path.join(__dirname, '/templates/backbone-model.js')));
 
   //Create the Backbone.Model file content
   var backboneModelString = backboneModelTemplate({
     name: modelName,
     modelData: JSON.stringify(clientModel)
   });
+
+  //Minifies the file content
+  backboneModelString = jsmin(backboneModelString);
 
   var modelPath = path.join(app.root, '/app/backbone-models/gen/' + modelName + '.js');
 
