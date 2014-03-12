@@ -1,7 +1,6 @@
 'use strict';
 
-var path = require('path'),
-    engines = require('consolidate');
+var path = require('path');
 
 var Rhapsody = function Rhapsody(options) {
 
@@ -22,6 +21,7 @@ var Rhapsody = function Rhapsody(options) {
     database: require(path.join(options.root, '/app/config/database')),
     defaults: require(path.join(options.root, '/app/config/defaults')),
     session: require(path.join(options.root, '/app/config/session')),
+    template: require(path.join(options.root, '/app/config/template')),
     error: require(path.join(options.root, '/app/config/error/error')),
     options: options
   };
@@ -72,6 +72,7 @@ Rhapsody.prototype = {
       this.generateModels(this, this.config.options.build);
     }
 
+
     //Configure express
     this.app.use(this.express.json()); //Parses the request body to JSON
     this.app.use(this.express.urlencoded()); //Actives URL encoded support
@@ -79,8 +80,19 @@ Rhapsody.prototype = {
     this.app.use(this.express.session({ //Actives session support
       secret: this.config.session.sessionSecret
     }));
-    this.app.set('view engine', this.config.defaults.viewEngine); //Set the default view engine
-    this.app.engine(this.config.defaults.viewEngine, engines[this.config.defaults.viewEngine]); //Set the default render engine module
+
+    //Uses consolidate to support the template engines
+    var engineRequires = this.config.template.engines,
+        engines = require('./utils/consolidate')(engineRequires),
+        templateEngines = this.config.template.engines;
+
+    this.app.set('view engine', this.config.template.defaultEngine); //Set the default view engine
+
+    //Require all the registered view engines
+    for(var engine in templateEngines) {
+      this.app.engine(templateEngines[engine].extension, engines[engine]);
+    }
+
     this.app.use(this.app.router); //Use the custom routes above the static and backbone-models
     this.app.use('/static', this.express.static(this.root + '/app/static')); //Static files should be here
     //Backbone models should be here for facility

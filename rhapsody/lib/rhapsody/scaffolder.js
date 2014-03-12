@@ -30,7 +30,8 @@ module.exports = {
       'name': appName,
       'main': 'app',
       'dependencies': {
-        'rhapsody': ('>=' + appVersion)
+        'rhapsody': ('>=' + appVersion),
+        'ejs': '^0.8.5'
       }
     };
 

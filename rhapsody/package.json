@@ -29,13 +29,11 @@
   },
   "dependencies": {
     "express": "3.x",
-    "ejs": "~0.8.5",
     "lodash": "~2.4.1",
     "mongoose": "~3.8.6",
     "nomnom": "~1.6.2",
     "fs-extra": "~0.8.1",
     "colors": "~0.6.2",
-    "consolidate": "~0.10.0",
     "jsmin": "^1.0.1"
   },
   "devDependencies": {

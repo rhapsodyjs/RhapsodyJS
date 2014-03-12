@@ -13,7 +13,7 @@ var MainController = {
     info: {
       action: function(req, res) {
         res.view({
-          name: 'info',
+          name: 'info.hbs',
           locals: {
             user: req.session.user
           }

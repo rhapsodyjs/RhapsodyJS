@@ -10,12 +10,5 @@ module.exports = {
 
     //If must be created REST routes for models
     allowREST: true
-  },
-
-
-  /**
-   * The default view engine can be any of:
-   * https://github.com/visionmedia/consolidate.js/#supported-template-engines
-   */
-  viewEngine: 'ejs'
+  }
 };

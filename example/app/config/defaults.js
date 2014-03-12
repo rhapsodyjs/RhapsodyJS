@@ -10,7 +10,5 @@ module.exports = {
 
     //If must be created REST routes for models
     allowREST: true
-  },
-  
-  viewEngine: 'ejs'
+  }
 }

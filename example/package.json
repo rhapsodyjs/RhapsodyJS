@@ -2,6 +2,8 @@
   "name": "sample",
   "main": "app",
   "dependencies": {
-    "rhapsody": ">=0.0.8"
+    "rhapsody": "0.1.0-beta",
+    "ejs": "^0.8.5",
+    "handlebars": "^2.0.0-alpha.2"
   }
 }
