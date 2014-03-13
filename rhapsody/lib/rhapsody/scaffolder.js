@@ -1,7 +1,8 @@
 var fs = require('fs-extra'),
     path = require('path'),
     appPath = process.cwd(),
-    Logger = require('./logger'),
+    Wolverine = require('wolverine'),
+    Logger = new Wolverine({time: false, printLevel: false}),
     npm = require('npm'),
     _ = require('lodash');
 
@@ -10,7 +11,7 @@ module.exports = {
   scaffoldApp: function scaffoldApp(appName, appPath, appVersion) {
     appPath = path.join(appPath, appName);
 
-    Logger('Scaffolding app');
+    Logger.info('Scaffolding app');
     try {
       fs.mkdirSync(appPath);
     }
@@ -41,7 +42,7 @@ module.exports = {
         return Logger.error(err);
       }
 
-      Logger('Running "npm install"')
+      Logger.info('Running "npm install"')
       //Run 'npm install' inside the new app folder
       npm.load({prefix: appPath, loglevel: 'error'}, function (err) {
         npm.commands.install([], function (er, data) {
@@ -87,7 +88,7 @@ module.exports = {
         }
       }
       else {
-        return Logger.error('You forgot an attribute type');
+        return Logger.warn('You forgot an attribute type');
       }
     }
 
@@ -101,7 +102,7 @@ module.exports = {
     try {
       fs.writeFile(path.join(appPath, '/app/models/' + modelName + '.js'), modelString, function(err) {
         if(err) {
-          return Logger.error(err);
+          return Logger.warn(err);
         }
       });
     }

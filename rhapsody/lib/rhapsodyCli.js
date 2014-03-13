@@ -1,16 +1,15 @@
 #!/usr/bin/env node
 
 var parser = require('nomnom'),
-	appPath = process.cwd(),
-	appName = '',
-	scaffoldPath = __dirname + '/scaffold',
-	pjson = require(__dirname + '/../package.json'),
-	colors = require('colors'),
-  Logger = require('./rhapsody/logger'),
+  appPath = process.cwd(),
+  appName = '',
+  scaffoldPath = __dirname + '/scaffold',
+  pjson = require(__dirname + '/../package.json'),
+  Wolverine = require('wolverine'),
+  Logger = new Wolverine({time: false, printLevel: false}),
   scaffolder = require('./rhapsody/scaffolder'),
   path = require('path');
 
-colors.setTheme(Logger.themes);
 
 parser.script('rhapsody');
 
@@ -20,8 +19,8 @@ var msg = {
    * @param  {String} argument 
    */
   argument: function argument(argument) {
-    console.log('');
-    return console.log((argument + ' argument is required').error);
+    Logger.info();
+    return Logger.warn(argument + ' argument is required');
   },
 
   /**
@@ -29,8 +28,8 @@ var msg = {
    * @param  {String} example
    */
   usage: function usage(example) {
-    console.log('');
-    return console.log('Usage:'.bold + (' rhapsody ' + example));
+    Logger.info();
+    return Logger.info('Usage: rhapsody ' + example);
   },
 
   /**
@@ -39,11 +38,11 @@ var msg = {
    * @param  {Array} options Array of arrays, where each sub-array has his usage in the first position, and explanation in the second
    */
   showOptions: function showOptions(command, options) {
-    console.log('');
-    console.log(command);
+    Logger.info();
+    Logger.info(command);
     for(var opt in options) {
       var option = options[opt];
-      console.log(('   ' + option[0] + '\t' + option[1]).grey);
+      Logger.info('   ' + option[0] + '\t' + option[1]);
     }
     return;
   },
@@ -53,7 +52,7 @@ var msg = {
    * @param  {String} command        [description]
    */
   invalid: function invalid(command) {
-    return console.log((command + ' is invalid').error);
+    return Logger.warn(command + ' is invalid');
   }
 };
 
@@ -66,7 +65,7 @@ var server = {
           build: true
         });
 
-    console.log('Server finished building'.info);
+    Logger.info('Server finished building');
     return rhapsodyServer;
   },
   run: function run(rhapsodyServer) {
@@ -86,14 +85,14 @@ var server = {
  * Scaffolds a new project
  */
 parser.command('new').callback(function(opts) {
-	if(opts._.length === 1) {
+  if(opts._.length === 1) {
     msg.argument('name');
-		return msg.usage('new <name>');
-	}
+    return msg.usage('new <name>');
+  }
 
-	appName = opts._[1];
+  appName = opts._[1];
 
-	scaffolder.scaffoldApp(appName, appPath, pjson.version);
+  scaffolder.scaffoldApp(appName, appPath, pjson.version);
 
 }).help('Create a new app');
 
@@ -104,12 +103,12 @@ parser.command('new').callback(function(opts) {
 parser.command('generate').callback(function(opts) {
   var extras = opts._;
 
-	if(extras.length === 1) {
-		msg.argument('generator');
-		msg.usage('generate <generator>');
+  if(extras.length === 1) {
+    msg.argument('generator');
+    msg.usage('generate <generator>');
     msg.showOptions('generator', [['controller', 'Create a new controller'], ['model', 'Create a new model']]);
-		return;
-	}
+    return;
+  }
 
   if(extras[1] === 'model') {
     //If wasn't passed the attributes and/or the name
