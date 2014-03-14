@@ -57,13 +57,19 @@ ControllerRouter.prototype = {
           exploringFirstLevelControllers = false;
 
           if(files.indexOf('static') !== -1) {
-            throw {message: 'A first-level controller can\'t be named "static"', name: 'InvalidControllerName'};
+            var error = new Error('A first-level controller can\'t be named "static"');
+            error.name = 'InvalidControllerName';
+            this.rhapsody.log.error(error);
           }
           if(files.indexOf('data') !== -1) {
-            throw {message: 'A first-level controller can\'t be named "data"', name: 'InvalidControllerName'};
+            var error = new Error('A first-level controller can\'t be named "static"');
+            error.name = 'InvalidControllerName';
+            this.rhapsody.log.error(error);
           }
           if(files.indexOf('backbone-models') !== -1) {
-            throw {message: 'A first-level controller can\'t be named "backbone-models"', name: 'InvalidControllerName'};
+            var error = new Error('A first-level controller can\'t be named "static"');
+            error.name = 'InvalidControllerName';
+            this.rhapsody.log.error(error);
           }
 
         }
@@ -86,9 +92,9 @@ ControllerRouter.prototype = {
         });
       }
       catch(e) {
-        //Falls here when try to reach controllers that doesn't exist or find controller with invalid name
-        if(e.name === 'InvalidControllerName') {
-          throw e;
+        if(e.code !== 'ENOENT') {
+          this.rhapsody.log.fatal(e);
+          process.exit(1);
         }
       }
     }

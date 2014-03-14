@@ -6,7 +6,7 @@ var parser = require('nomnom'),
   scaffoldPath = __dirname + '/scaffold',
   pjson = require(__dirname + '/../package.json'),
   Wolverine = require('wolverine'),
-  Logger = new Wolverine({time: false, printLevel: false}),
+  Logger = new Wolverine(),
   scaffolder = require('./rhapsody/scaffolder'),
   path = require('path');
 

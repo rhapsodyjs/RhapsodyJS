@@ -26,6 +26,8 @@ var Rhapsody = function Rhapsody(options) {
     options: options
   };
 
+  this.log = require('./rhapsody/logger');
+
   this.models = {};
 
   //Expose object as global
@@ -35,7 +37,6 @@ var Rhapsody = function Rhapsody(options) {
 };
 
 Rhapsody.prototype = {
-  log: require('./rhapsody/logger'),
   generateModels: require('./rhapsody/models'),
 
   /**

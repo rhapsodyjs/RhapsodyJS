@@ -38,11 +38,13 @@ var generateModels = function generateModels(app, buildBackboneModels) {
   if(buildBackboneModels) {
     fs.removeSync(backboneModelsPath, function (err) {
       if(err) {
+        app.log.error(err);
         throw err;
       }
     });
     fs.mkdirSync(backboneModelsPath, function (err) {
       if(err) {
+        app.log.error(err);
         throw err;
       }
     });
@@ -181,6 +183,7 @@ var generateClientModel = function generateClientModel(app, modelName, clientDef
   //Create the Backbone model file
   fs.writeFile(modelPath, backboneModelString, function(err) {
     if(err) {
+      app.log.error(err);
       throw err;
     }
   });
