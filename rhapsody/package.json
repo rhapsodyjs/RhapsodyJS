@@ -1,7 +1,7 @@
 {
   "name": "rhapsody",
   "description": "Lib HMVC for NodeJS",
-  "version": "0.1.0",
+  "version": "0.1.1-beta",
   "homepage": "https://github.com/talyssonoc/rhapsodyjs",
   "author": {
     "name": "talyssonoc",
@@ -34,7 +34,7 @@
     "nomnom": "~1.6.2",
     "fs-extra": "~0.8.1",
     "jsmin": "^1.0.1",
-    "wolverine": "0.0.3"
+    "wolverine": "0.0.5"
   },
   "devDependencies": {
     "mocha": "~1.10.0",

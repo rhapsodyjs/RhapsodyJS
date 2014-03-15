@@ -51,7 +51,7 @@ ModelRouter.prototype = {
     var serverModel = Rhapsody.requireModel(req.params.model);
 
     if(!serverModel) {
-      Rhapsody.log.debug('Nonexistent model', 'Couldn\'t find collection %s', req.params.model);
+      Rhapsody.log.verbose('Nonexistent model', 'Couldn\'t find collection %s', req.params.model);
       return responseUtils.respond(res, 400); //Malformed syntax or a bad query
     }
 
@@ -61,14 +61,14 @@ ModelRouter.prototype = {
     newData.save(function createData(err) {
       if(err) {
         if(err.name === 'ValidationError') {
-          Rhapsody.log.debug(err);
+          Rhapsody.log.verbose(err);
           responseUtils.respond(res, 400); //Malformed syntax or a bad query
         }
         Rhapsody.log.error(err);
         responseUtils.respond(res, 500); //Internal server error
       }
       else {
-       Rhapsody.log.debug('Data creation', 'New data was added to collection %s', req.params.model);
+       Rhapsody.log.verbose('Data creation', 'New data was added to collection %s', req.params.model);
        responseUtils.json(res, 201, newData); //Sucessful creation
       }
     });
@@ -78,7 +78,7 @@ ModelRouter.prototype = {
     var fullModel = Rhapsody.requireModel(req.params.model, true);
 
     if(!fullModel) {
-      Rhapsody.log.debug('Nonexistent model', 'Couldn\'t find collection %s', req.params.model);
+      Rhapsody.log.verbose('Nonexistent model', 'Couldn\'t find collection %s', req.params.model);
       return responseUtils.respond(res, 400); //Malformed syntax or a bad query
     }
 
@@ -97,7 +97,7 @@ ModelRouter.prototype = {
           var filteredData = _.map(data, function(rawData) {
             return _.omit(rawData.toObject(), restrictedAttributes);
           });
-          Rhapsody.log.debug('Data reading', 'All data was read from collection %s', req.params.model);
+          Rhapsody.log.verbose('Data reading', 'All data was read from collection %s', req.params.model);
           responseUtils.json(res, 200, filteredData); //No error, operation successful
         }
       });
@@ -110,13 +110,13 @@ ModelRouter.prototype = {
         }
         else {
           if(data === null) {
-            Rhapsody.log.debug('Data not found', 'Could not find data from collection %s to read it', req.params.model);
+            Rhapsody.log.verbose('Data not found', 'Could not find data from collection %s to read it', req.params.model);
             responseUtils.respond(res, 404); //Resource not found
           }
           else {
             //Gets the data without the restricted attributes
             var filteredData = _.omit(data.toObject(), restrictedAttributes);
-            Rhapsody.log.debug('Data reading', 'Data was read from collection %s', req.params.model);
+            Rhapsody.log.verbose('Data reading', 'Data was read from collection %s', req.params.model);
             responseUtils.json(res, 200, filteredData); //No error, operation successful
           }
         }
@@ -128,7 +128,7 @@ ModelRouter.prototype = {
     var serverModel = Rhapsody.requireModel(req.params.model);
 
     if(!serverModel) {
-      Rhapsody.log.debug('Nonexistent model', 'Couldn\'t find collection %s', req.params.model);
+      Rhapsody.log.verbose('Nonexistent model', 'Couldn\'t find collection %s', req.params.model);
       return responseUtils.respond(res, 400); //Malformed syntax or a bad query
     }
 
@@ -136,14 +136,14 @@ ModelRouter.prototype = {
     serverModel.update({_id: req.params.id}, dataToUpdate, function updateData(err, data) {
       if(err) {
         if(err.name === 'ValidationError') {
-          Rhapsody.log.debug(err);
+          Rhapsody.log.verbose(err);
           responseUtils.respond(res, 400); //Malformed syntax or a bad query
         }
-        Rhapsody.log.debug(err);
+        Rhapsody.log.verbose(err);
         responseUtils.respond(res, 500); //Status code for service error on server
       }
       else {
-        Rhapsody.log.debug('Data update', 'Data was updated on collection %s', req.params.model);
+        Rhapsody.log.verbose('Data update', 'Data was updated on collection %s', req.params.model);
         responseUtils.respond(res, 202); //The request was received
       }
     });
@@ -153,17 +153,17 @@ ModelRouter.prototype = {
     var serverModel = Rhapsody.requireModel(req.params.model);
 
     if(!serverModel) {
-      Rhapsody.log.debug('Nonexistent model', 'Couldn\'t find collection %s', req.params.model);
+      Rhapsody.log.verbose('Nonexistent model', 'Couldn\'t find collection %s', req.params.model);
       return responseUtils.respond(res, 400); //Malformed syntax or a bad query
     }
 
     serverModel.remove({_id: req.params.id}, function deleteData(err) {
       if(err) {
-        Rhapsody.log.debug(err);
+        Rhapsody.log.verbose(err);
         responseUtils.respond(res, 500); //Status code for service error on server
       }
       else {
-        Rhapsody.log.debug('Data deletion', 'Data was deleted from collection %s', req.params.model);
+        Rhapsody.log.verbose('Data deletion', 'Data was deleted from collection %s', req.params.model);
         responseUtils.respond(res, 202); //The request was received
       }
     });

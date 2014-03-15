@@ -25,7 +25,7 @@ ControllerRouter.prototype = {
 
     // Define the main controller as the root of the server
     this.routeSingleController({
-      path: path.join(this.rhapsody.root, '/app/controllers/' + this.rhapsody.config.defaults.routes.mainController),
+      path: path.join(this.rhapsody.root, '/app/controllers/' + this.rhapsody.config.routes.mainController),
       subs: []
     }, true);
 
@@ -154,8 +154,8 @@ ControllerRouter.prototype = {
 
 
     //Routes the main view of the controller
-    this.bind(controller.mainView || this.rhapsody.config.defaults.routes.mainView, 
-    views[controller.mainView || this.rhapsody.config.defaults.routes.mainView],
+    this.bind(controller.mainView || this.rhapsody.config.routes.mainView, 
+    views[controller.mainView || this.rhapsody.config.routes.mainView],
     controllerInfo,
     subs,
     '/' + subs + '/?');

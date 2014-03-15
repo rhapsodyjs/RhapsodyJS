@@ -1,6 +1,6 @@
 module.exports = {
-  port: 4242,
-
+  environment: 'dev',
+  
   routes: {
     //Controller used when access the app's root
     mainController: 'main',
@@ -11,4 +11,4 @@ module.exports = {
     //If must be created REST routes for models
     allowREST: true
   }
-}
+};

@@ -1,2 +1,5 @@
 var Wolverine = require('wolverine');
-module.exports = new Wolverine();
+
+module.exports = function(config) {
+  return new Wolverine(Wolverine[config.level.toUpperCase()], config);
+};

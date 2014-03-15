@@ -1,6 +1,6 @@
 module.exports = {
-  port: 4242,
-  
+  environment: 'prod',
+
   routes: {
     //Controller used when access the app's root
     mainController: 'main',

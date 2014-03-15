@@ -1,6 +1,9 @@
 'use strict';
 
-var path = require('path');
+var path = require('path'),
+    _ = require('lodash'),
+    Wolverine = require('wolverine'),
+    Logger = new Wolverine();
 
 var Rhapsody = function Rhapsody(options) {
 
@@ -17,16 +20,31 @@ var Rhapsody = function Rhapsody(options) {
     modelRouter: new ModelRouter(this)
   };
 
-  this.config = {
-    database: require(path.join(options.root, '/app/config/database')),
-    defaults: require(path.join(options.root, '/app/config/defaults')),
+  this.config = require(path.join(options.root, '/app/config/config'));
+
+  //Get the general environment settings
+  _.extend(this.config, require(path.join(options.root, '/app/config/envs/all')));
+
+  //Overwrite it with the defined environment settings
+  _.extend(this.config, require(path.join(options.root, '/app/config/envs/' + this.config.environment)));
+
+  //Then extends it with the other settings
+  _.extend(this.config, {
     session: require(path.join(options.root, '/app/config/session')),
-    template: require(path.join(options.root, '/app/config/template')),
+    templateEngines: require(path.join(options.root, '/app/config/template-engines')),
     error: require(path.join(options.root, '/app/config/error/error')),
     options: options
-  };
+  });
 
-  this.log = require('./rhapsody/logger');
+  this.log = require('./rhapsody/logger')(this.config.log);
+
+  var self = this;
+
+  //If some uncaufh exception occurs, print it and then kill the process
+  process.on('uncaughtException', function(err){
+      self.log.fatal(err);
+      process.exit(1);
+  });
 
   this.models = {};
 
@@ -83,11 +101,11 @@ Rhapsody.prototype = {
     }));
 
     //Uses consolidate to support the template engines
-    var engineRequires = this.config.template.engines,
+    var engineRequires = this.config.templateEngines.engines,
         engines = require('./utils/consolidate')(engineRequires),
-        templateEngines = this.config.template.engines;
+        templateEngines = this.config.templateEngines.engines;
 
-    this.app.set('view engine', this.config.template.defaultEngine); //Set the default view engine
+    this.app.set('view engine', this.config.templateEngines.defaultEngine); //Set the default view engine
 
     //Require all the registered view engines
     for(var engine in templateEngines) {
@@ -103,7 +121,7 @@ Rhapsody.prototype = {
 
     //Configure the routes
     this.router.controllerRouter.route();
-    if(this.config.defaults.routes.allowREST) {
+    if(this.config.routes.allowREST) {
       this.router.modelRouter.route();
     }
   },
@@ -112,9 +130,9 @@ Rhapsody.prototype = {
     //Configure the server before run it
     this.configure();
 
-    var port = this.config.defaults.port;
+    var port = this.config.port;
     this.server = this.app.listen(port);
-    this.log.info('Listening port ' + port);
+    Logger.info('Listening port ' + port);
 
     if(callback) {
       callback(this.server);
@@ -123,7 +141,7 @@ Rhapsody.prototype = {
 
   close: function close() {
     this.server.close();
-    this.log.warn('Server closed');
+    Logger.warn('Server closed');
   }
 };
 
