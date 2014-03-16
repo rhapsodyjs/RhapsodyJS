@@ -76,7 +76,7 @@ Rhapsody.prototype = {
   /**
    * Configure the server before open it
    */
-  configure: function configure() {
+  configure: function configure(finishedBoostrap) {
     //If database is enabled, configure it
     if(this.config.database.active) {
       this.database = require('mongoose');
@@ -129,19 +129,25 @@ Rhapsody.prototype = {
     if(this.config.routes.allowREST) {
       this.router.modelRouter.route();
     }
+
+    var boostrap = require(path.join(this.root, '/app/config/bootstrap'));
+    boostrap(this, finishedBoostrap);
   },
 
   open: function open(callback) {
+    var self = this;
+    var runServer = function runServer() {
+      var port = self.config.port;
+      self.server = self.app.listen(port);
+      Logger.info('Listening port ' + port);
+
+      if(callback) {
+        callback(this.server);
+      }
+    };
+
     //Configure the server before run it
-    this.configure();
-
-    var port = this.config.port;
-    this.server = this.app.listen(port);
-    Logger.info('Listening port ' + port);
-
-    if(callback) {
-      callback(this.server);
-    }
+    this.configure(runServer);
   },
 
   close: function close() {
