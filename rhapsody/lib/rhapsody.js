@@ -93,11 +93,16 @@ Rhapsody.prototype = {
 
 
     //Configure express
+    this.app.disable('x-powered-by'); //Disables the 'X-Powered-By: Express' on the HTTP header
     this.app.use(this.express.json()); //Parses the request body to JSON
     this.app.use(this.express.urlencoded()); //Actives URL encoded support
     this.app.use(this.express.cookieParser(this.config.session.cookiesSecret)); //Actives cookie support
     this.app.use(this.express.session({ //Actives session support
-      secret: this.config.session.sessionSecret
+      secret: this.config.session.sessionSecret,
+      key: 'sessionID',
+      cookie: {
+        httpOnly: true
+      }
     }));
 
     //Uses consolidate to support the template engines
