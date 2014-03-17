@@ -1,5 +1,5 @@
 module.exports = {
-  environment: 'prod',
+  environment: 'dev',
 
   routes: {
     //Controller used when access the app's root

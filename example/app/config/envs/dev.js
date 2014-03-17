@@ -1,5 +1,6 @@
 module.exports = {
   log: {
-    level: 'all'
+    level: 'all',
+    printStack: true
   }
 };

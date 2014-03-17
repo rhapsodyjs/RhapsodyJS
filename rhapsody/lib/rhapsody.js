@@ -12,6 +12,8 @@ var Rhapsody = function Rhapsody(options) {
 
   this.express = require('express');
   this.app = this.express();
+  //Save the server instance, so it can be used for with Socket.io
+  this.server = require('http').createServer(this.app);
   
   this.root = options.root;
 
@@ -35,6 +37,11 @@ var Rhapsody = function Rhapsody(options) {
     error: require(path.join(options.root, '/app/config/error/error')),
     options: options
   });
+
+  this.callbacks = {
+    bootstrap: require(path.join(this.root, '/app/config/bootstrap')),
+    socket: require(path.join(this.root, '/app/config/socket'))
+  };
 
   this.log = require('./rhapsody/logger')(this.config.log);
 
@@ -76,7 +83,7 @@ Rhapsody.prototype = {
   /**
    * Configure the server before open it
    */
-  configure: function configure(finishedBoostrap) {
+  configure: function configure(finishedBootstrap) {
     //If database is enabled, configure it
     if(this.config.database.active) {
       this.database = require('mongoose');
@@ -130,15 +137,25 @@ Rhapsody.prototype = {
       this.router.modelRouter.route();
     }
 
-    var boostrap = require(path.join(this.root, '/app/config/bootstrap'));
-    boostrap(this, finishedBoostrap);
+    this.callbacks.bootstrap(this, finishedBootstrap);
   },
 
   open: function open(callback) {
     var self = this;
     var runServer = function runServer() {
+      if(self.config.socket.active) {
+
+        //Creates and configure the Socket server
+        var io = require('socket.io').listen(self.server, {
+          logger: self.log,
+          'log level': self.log.level
+        });
+
+        self.callbacks.socket(io, self.config.socket);
+      }
+
       var port = self.config.port;
-      self.server = self.app.listen(port);
+      self.server.listen(port);
       Logger.info('Listening port ' + port);
 
       if(callback) {
