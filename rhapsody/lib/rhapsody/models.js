@@ -9,7 +9,7 @@ var fs = require('fs-extra'),
  * Models can have the following attributes:
  * - attributes (just type, or the following)
  *    - type (http://mongoosejs.com/docs/schematypes.html)
- *    - serverValidations (must be in sharedMethods)
+ *    - serverValidations
  *    - default
  *    - required
  *    - restricted (won't be present in Backbone model and won't be sent via REST)
@@ -127,8 +127,8 @@ var generateServerModel = function generateServerModel(app, modelName, serverAtt
     validationArray = [];
     //For each validation for that attribute
     for(validation in serverValidations[attr]) {
-      //Get the validation function in the sharedMethods
-      var validationFunction = requiredModel.sharedMethods[serverValidations[attr][validation]];
+      //Get the validation function in the serverMethods
+      var validationFunction = requiredModel.serverMethods[serverValidations[attr][validation]];
       validationArray.push(validationFunction);
     }
     serverAttributes[attr].validate = validationArray;

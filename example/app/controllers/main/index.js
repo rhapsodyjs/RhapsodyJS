@@ -12,7 +12,11 @@ var MainController = {
 
     info: {
       action: function(req, res) {
-        Rhapsody.log.oneLevel('to rule them all');
+        // console.log(require('util').inspect(req.cookies, {showHidden: true}));
+        // console.log(req.cookies.sessionID);
+        // console.log(req.signedCookies);
+
+        // Rhapsody.log.oneLevel('to rule them all');
 
         res.view({
           name: 'info.hbs',

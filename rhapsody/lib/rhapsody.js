@@ -3,7 +3,7 @@
 var path = require('path'),
     _ = require('lodash'),
     Wolverine = require('wolverine'),
-    Logger = new Wolverine();
+    Logger = new Wolverine(Wolverine.DEBUG);
 
 var Rhapsody = function Rhapsody(options) {
 
@@ -84,6 +84,8 @@ Rhapsody.prototype = {
    * Configure the server before open it
    */
   configure: function configure(finishedBootstrap) {
+    var sessionIDKey = this.config.session.sessionIDKey || 'sessionID';
+
     //If database is enabled, configure it
     if(this.config.database.active) {
       this.database = require('mongoose');
@@ -103,12 +105,47 @@ Rhapsody.prototype = {
     this.app.disable('x-powered-by'); //Disables the 'X-Powered-By: Express' on the HTTP header
     this.app.use(this.express.json()); //Parses the request body to JSON
     this.app.use(this.express.urlencoded()); //Actives URL encoded support
-    this.app.use(this.express.cookieParser(this.config.session.cookiesSecret)); //Actives cookie support
+
+    var usingSignedCookie;
+    var maxAge = this.config.session.maxAge;
+
+    if(this.config.session.cookiesSecret) {
+      usingSignedCookie = true;
+      this.app.use(this.express.cookieParser(this.config.session.cookiesSecret)); //Actives signed cookie support
+    }
+    else {
+      usingSignedCookie = false;
+      this.app.use(this.express.cookieParser()); //Actives unsigned cookie support
+    }
+
+    //Refreshes the cookie time
+    this.app.use(function(req, res, next) {
+      var cookieID;
+
+      if(usingSignedCookie) {
+        cookieID = req.signedCookies[sessionIDKey];
+      }
+      else {
+        cookieID = req.cookies[sessionIDKey];
+      }
+
+      if(cookieID) {
+        res.cookie(sessionIDKey, cookieID, {
+          httpOnly: true,
+          signed: usingSignedCookie,
+          maxAge: maxAge
+        });
+      }
+
+      next();
+    });
+
     this.app.use(this.express.session({ //Actives session support
       secret: this.config.session.sessionSecret,
-      key: 'sessionID',
+      key: sessionIDKey,
       cookie: {
-        httpOnly: true
+        httpOnly: true,
+        maxAge: maxAge
       }
     }));
 
@@ -151,6 +188,7 @@ Rhapsody.prototype = {
           'log level': self.log.level
         });
 
+        //Use the config/socket.js file
         self.callbacks.socket(io, self.config.socket);
       }
 
