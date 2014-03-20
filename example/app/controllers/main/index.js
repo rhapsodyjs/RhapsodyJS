@@ -7,14 +7,12 @@ var MainController = {
 
     login: {
       action: 'login.html',
-      middlewares: ['not-logged']
+      middlewares: ['not-logged'],
+      customRoutes: ['/signin']
     },
 
     info: {
       action: function(req, res) {
-        // console.log(require('util').inspect(req.cookies, {showHidden: true}));
-        // console.log(req.cookies.sessionID);
-        // console.log(req.signedCookies);
 
         // Rhapsody.log.oneLevel('to rule them all');
 

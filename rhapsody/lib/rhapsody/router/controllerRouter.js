@@ -197,16 +197,21 @@ ControllerRouter.prototype = {
 
       //If the path accepts parameters, put it on the URL
       if(typeof view.params !== 'undefined') {
-        params = view.params.join('/');
-        routingPath += '/' + params;
+        params = '/' + view.params.join('/');
+        routingPath += params;
+      }
+      else {
+        params = '';
       }
 
-      //If the path has middlewares
-      if(_.isArray(view.middlewares)) {
-        var middleware;
+      var hasMiddlewares = _.isArray(view.middlewares);
+
+      //If the path has middlewares, bind them
+      if(hasMiddlewares) {
+        var middlewares = [];
         for(var i = 0; i < view.middlewares.length; i++) {
-          middleware = require(path.join(this.rhapsody.root, '/app/middlewares/' + view.middlewares[i]));
-          this.app[verb](routingPath, middleware);
+          middlewares[i] = require(path.join(this.rhapsody.root, '/app/middlewares/' + view.middlewares[i]));
+          this.app[verb](routingPath, middlewares[i]);
         }
       }
 
@@ -217,15 +222,21 @@ ControllerRouter.prototype = {
       this.app[verb](routingPath, bindedFuncion);
 
       //If the view has customRoutes
-      if(typeof view.customRoutes !== 'undefined') {
+      if(_.isArray(view.customRoutes)) {
         var customRoutes = view.customRoutes;
-        //The user can pass a single custom route or an array
-        //If a single route is passed, make it an array
-        if(!_.isArray(customRoutes)) {
-          customRoutes = [customRoutes];
-        }
+
         for(var i = 0; i < customRoutes.length; i++) {
-          var pathToBeRouted = customRoutes[i] + '/' + params;
+          var pathToBeRouted = customRoutes[i] + params;
+
+          console.log(pathToBeRouted);
+
+          //Binds the middlewares (precached above) before the custom route
+          if(hasMiddlewares) {
+            for(var i = 0; i < view.middlewares.length; i++) {
+              this.app[verb](pathToBeRouted, middlewares[i]);
+            }
+          }
+
           //Binds the custom route
           this.app[verb](pathToBeRouted, bindedFuncion);
         }
