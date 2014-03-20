@@ -167,6 +167,7 @@ Rhapsody.prototype = {
     //the generated models will be in /backbone-models/gen/ModelName.js
     this.app.use('/backbone-models', this.express.static(this.root + '/app/backbone-models'));
     this.app.use(this.config.error.error404Handler);
+    this.app.use(this.config.error.error500Handler);
 
     //Configure the routes
     this.router.controllerRouter.route();

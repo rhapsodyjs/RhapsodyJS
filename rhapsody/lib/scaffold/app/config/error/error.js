@@ -13,7 +13,7 @@ module.exports = {
     }
   },
 
-  error500Handler: function(req, res) {
+  error500Handler: function(err, req, res, next) {
     var code = 500;
     if(req.xhr) {
       res.send(code, http.STATUS_CODES[code]);
