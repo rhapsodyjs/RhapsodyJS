@@ -228,8 +228,6 @@ ControllerRouter.prototype = {
         for(var i = 0; i < customRoutes.length; i++) {
           var pathToBeRouted = customRoutes[i] + params;
 
-          console.log(pathToBeRouted);
-
           //Binds the middlewares (precached above) before the custom route
           if(hasMiddlewares) {
             for(var i = 0; i < view.middlewares.length; i++) {

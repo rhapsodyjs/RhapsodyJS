@@ -87,7 +87,7 @@ Rhapsody.prototype = {
     var sessionIDKey = this.config.session.sessionIDKey || 'sessionID';
 
     //If database is enabled, configure it
-    if(this.config.database.active) {
+    if(this.config.database.enabled) {
       this.database = require('mongoose');
       try {
         this.dbConnection = this.database.createConnection(this.config.database.host, this.config.database.name);
@@ -181,7 +181,7 @@ Rhapsody.prototype = {
   open: function open(callback) {
     var self = this;
     var runServer = function runServer() {
-      if(self.config.socket.active) {
+      if(self.config.socket.enabled) {
 
         //Creates and configure the Socket server
         var io = require('socket.io').listen(self.server, {

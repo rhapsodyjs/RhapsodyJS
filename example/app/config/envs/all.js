@@ -2,7 +2,7 @@ module.exports = {
   host: 'localhost',
   port: 4242,
   database: {
-    active: false,
+    enabled: false,
     host: 'localhost',
     port: 27017,
     name: 'rhapsody'
@@ -15,6 +15,6 @@ module.exports = {
     time: true
   },
   socket: {
-    active: true
+    enabled: true
   }
 };
