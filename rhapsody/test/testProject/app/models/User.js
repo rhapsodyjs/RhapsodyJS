@@ -15,9 +15,6 @@ var User = {
 	sharedMethods: {
 		fullInfo: function() {
 			return this.get('name') + ' - ' + this.get('age');
-		},
-		notNegative: function(value) {
-			return value >= 0;
 		}
 	},
 
@@ -28,6 +25,9 @@ var User = {
 	serverMethods: {
 		customMethod: function() {
       return 'Optional content';
+    },
+    notNegative: function(value) {
+      return value >= 0;
     }
 	},
 

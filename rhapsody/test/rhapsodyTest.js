@@ -1,7 +1,6 @@
 'use strict';
 
 var chai = require('chai'),
-    http = require('http'),
     request = require('supertest'),
     util = require('util');
 
@@ -9,8 +8,7 @@ chai.expect();
 chai.should();
 var expect = chai.expect;
 
-var http = require('http'),
-    server = require('./testProject/app'),
+var server = require('./testProject/app'),
     app;
 
 

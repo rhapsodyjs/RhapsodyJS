@@ -2,17 +2,18 @@ module.exports = {
   host: 'localhost',
   port: 4242,
   database: {
-    enabled: false,
+    enabled: true,
     host: 'localhost',
     port: 27017,
-    name: 'rhapsody'
+    name: 'rhapsodyTests'
   },
   log: {
     level: 'info',
     output: undefined,
     printStack: false,
     printLevel: true,
-    time: true
+    time: true,
+    silent: true
   },
   socket: {
     enabled: true
