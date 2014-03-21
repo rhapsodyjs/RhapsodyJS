@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>First Backbone test</title>
+	<script src="js/jquery.js"></script>
+	<script src="js/underscore.js"></script>
+  <script src="js/backbone.js"></script>
+  <script src="/backbone-models/gen/User.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io.connect('http://localhost');
+    socket.on('heyClient', function (data) {
+      alert(data.hello);
+      socket.emit('heyServer', { hello: 'server' });
+    });
+  </script>
+
+	<script>
+
+  $(function() {
+
+    var newUser = new User({_id: '53021a5b7b7485ec10f5f39d'});
+    // var newUser = new User({
+    //   name: 'RhapsodyJS test user',
+    //   age: 1,
+    //   password: 'test-password'
+    // });
+		newUser.fetch({
+      success: function() {
+        alert(newUser.get('name'));
+      },
+      error: function() {
+        // alert('User can\'t be found.');
+      }
+    });
+	    
+    // newUser.save(this.attributes, {
+    //   success: function() {
+    //     alert('Success !');
+    //   },
+    //   error: function() {
+    //     alert('Error !');
+    //   }
+    // });
+
+	});
+
+	</script>
+
+</head>
+<body>
+
+
+
+</body>
+</html>

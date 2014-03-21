@@ -1,50 +1,44 @@
 'use strict';
 
 var chai = require('chai'),
-    http = require('http');
+    http = require('http'),
+    request = require('supertest'),
+    util = require('util');
 
 chai.expect();
 chai.should();
 var expect = chai.expect;
 
 var http = require('http'),
-    rhapsody = require('../lib')(__dirname + '/../app'),
-    server;
+    server = require('./testProject/app'),
+    app;
 
 
-describe('RhapsodyJS', function() {
+describe('RhapsodyJS common tests', function() {
 
     before(function() {
-        server = rhapsody.open(4242);
+        server.open();
+        app = server.app;
     });
 
     after(function() {
-        rhapsody.close();
+        server.close();
     });
 
-    // describe('Controller routing', function() {
+    it('Main controller should not need to be named and responses must be equivalent', function(done) {
+      request(app)
+      .get('/login')
+      .expect(200)
+      .end(function(err, res) {
+        request(app)
+        .get('/main/login')
+        .expect(function(secondRes) {
+          expect(res.text).to.be.eql(secondRes.text);
+        })
+        .end(done);
+      });
+    });
 
-    //     it('Server root points to mainController#mainView', function() {
-    //         http.get('http://localhost:4242', function (res) {
-    //             expect(res.statusCode).to.equal(200);
-    //         });
-    //     });
-    // });
-    
-    // describe('Model routing', function() {
-
-    //     it('Can access model that allowed REST', function() {
-    //         http.get('http://localhost:4242/data/User', function (res) {
-    //             expect(res.statusCode).to.equal(200);
-    //         });
-    //     });
-
-    //     it('Can\'t access model that allowed REST', function() {
-    //         http.get('http://localhost:4242/data/Comment', function (res) {
-    //             expect(res.statusCode).to.equal(404);
-    //         });
-    //     });
-    // });
 
 });
 

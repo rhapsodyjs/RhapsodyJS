@@ -27,10 +27,13 @@
   "bin": {
     "rhapsody": "./lib/rhapsodyCli.js"
   },
+  "scripts": {
+    "test": "grunt test"
+  },
   "dependencies": {
     "express": "3.x",
     "jsmin": "^1.0.1",
-    "wolverine": "0.0.5",
+    "wolverine": "0.0.6",
     "socket.io": "^0.9.16",
     "lodash": "^2.4.1",
     "mongoose": "^3.8.8",
@@ -43,6 +46,7 @@
     "supertest": "^0.9.0",
     "grunt-mocha-cli": "^1.7.0",
     "load-grunt-tasks": "^0.4.0",
-    "time-grunt": "^0.2.10"
+    "time-grunt": "^0.2.10",
+    "grunt": "^0.4.4"
   }
 }
