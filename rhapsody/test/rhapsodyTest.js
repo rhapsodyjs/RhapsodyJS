@@ -47,6 +47,16 @@ describe('RhapsodyJS common tests', function() {
       });
     });
 
+    it('Should find the publicfile.txt file', function(done) {
+      request(app)
+      .get('/publicfile.txt')
+      .expect(200)
+      .end(function(err, res) {
+        expect(res.text).to.be.eql('public file content');
+        done();
+      });
+    });
+
 
 });
 

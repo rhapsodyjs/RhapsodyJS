@@ -161,19 +161,17 @@ Rhapsody.prototype = {
       this.app.engine(templateEngines[engine].extension, engines[engine]);
     }
 
-    this.app.use(this.app.router); //Use the custom routes above the static
-    this.app.get('/robots.txt', function(req, res) {
-      res.sendfile(self.root + '/app/config/robots.txt');
-    }); //Provide the robots.txt file
-    this.app.use('/static', this.express.static(this.root + '/app/static')); //Static files should be here
-    this.app.use(this.config.error.error404Handler);
-    this.app.use(this.config.error.error500Handler);
-
-    //Configure the routes
+    //Configure the controller routes
     this.router.controllerRouter.route();
+
+    //Configure the RESTful API routes
     if(this.config.routes.allowREST) {
       this.router.modelRouter.route();
     }
+
+    this.app.use(this.express.static(this.root + '/app/public')); //Static files should be here
+    this.app.use(this.config.error.error404Handler);
+    this.app.use(this.config.error.error500Handler);
 
     this.callbacks.bootstrap(this, finishedBootstrap);
   },

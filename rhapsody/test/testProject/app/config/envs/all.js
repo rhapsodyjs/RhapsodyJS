@@ -13,7 +13,7 @@ module.exports = {
     printStack: false,
     printLevel: true,
     time: true,
-    silent: false
+    silent: true
   },
   socket: {
     enabled: true

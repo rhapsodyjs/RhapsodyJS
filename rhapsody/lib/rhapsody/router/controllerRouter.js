@@ -56,11 +56,6 @@ ControllerRouter.prototype = {
         if(exploringFirstLevelControllers) {
           exploringFirstLevelControllers = false;
 
-          if(files.indexOf('static') !== -1) {
-            var error = new Error('A first-level controller can\'t be named "static"');
-            error.name = 'InvalidControllerName';
-            this.rhapsody.log.error(error);
-          }
           if(files.indexOf('data') !== -1) {
             var error = new Error('A first-level controller can\'t be named "static"');
             error.name = 'InvalidControllerName';
@@ -128,11 +123,10 @@ ControllerRouter.prototype = {
           var rootViewAction = viewName.split(':');
           var rootViewName = (rootViewAction.length == 1 ? rootViewAction[0] : rootViewAction[1]);
 
-          if(rootViewName === 'static') {
-            throw {message: 'A root view can\'t be named "static"', name: 'InvalidViewName'};
-          }
-          if(rootViewName ===  'data') {
-            throw {message: 'A root view controller can\'t be named "data"', name: 'InvalidViewName'};
+          if(this.rhapsody.config.routes.allowREST && rootViewName ===  'data') {
+            var newError = new Error('A root view controller can\'t be named "data" when RESTful API generator is enabled');
+            newError.name = 'InvalidViewName';
+            throw newError;
           }
 
           this.bind(viewName, view, controllerInfo, subs, '/' + rootViewName);
