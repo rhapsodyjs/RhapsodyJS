@@ -6,9 +6,9 @@ var path = require('path'),
     Logger = new Wolverine(Wolverine.DEBUG);
 
 var Rhapsody = function Rhapsody(options) {
-
-  var ControllerRouter = require('./rhapsody/router/controllerRouter');
-  var ModelRouter = require('./rhapsody/router/modelRouter');
+  var self = this,
+  ControllerRouter = require('./rhapsody/router/controllerRouter'),
+  ModelRouter = require('./rhapsody/router/modelRouter');
 
   this.express = require('express');
   this.app = this.express();
@@ -45,7 +45,6 @@ var Rhapsody = function Rhapsody(options) {
 
   this.log = require('./rhapsody/logger')(this.config.log);
 
-  var self = this;
 
   //If some uncaufh exception occurs, print it and then kill the process
   process.on('uncaughtException', function(err){
@@ -84,6 +83,7 @@ Rhapsody.prototype = {
    * Configure the server before open it
    */
   configure: function configure(finishedBootstrap) {
+    var self = this;
     var sessionIDKey = this.config.session.sessionIDKey || 'sessionID';
 
     //If database is enabled, configure it
@@ -162,6 +162,9 @@ Rhapsody.prototype = {
     }
 
     this.app.use(this.app.router); //Use the custom routes above the static and backbone-models
+    this.app.get('/robots.txt', function(req, res) {
+      res.sendfile(self.root + '/app/config/robots.txt');
+    }); //Provide the robots.txt file
     this.app.use('/static', this.express.static(this.root + '/app/static')); //Static files should be here
     //Backbone models should be here for facility
     //the generated models will be in /backbone-models/gen/ModelName.js

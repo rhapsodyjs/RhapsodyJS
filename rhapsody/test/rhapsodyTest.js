@@ -37,6 +37,16 @@ describe('RhapsodyJS common tests', function() {
       });
     });
 
+    it('Should find the robots.txt file', function(done) {
+      request(app)
+      .get('/robots.txt')
+      .expect(200)
+      .end(function(err, res) {
+        expect(res.text).to.be.eql('Just a test =)');
+        done();
+      });
+    });
+
 
 });
 
