@@ -25,13 +25,13 @@ var Rhapsody = function Rhapsody(options) {
   this.config = require(path.join(options.root, '/app/config/config'));
 
   //Get the general environment settings
-  _.extend(this.config, require(path.join(options.root, '/app/config/envs/all')));
+  this.config = _.merge(this.config, require(path.join(options.root, '/app/config/envs/all')));
 
   //Overwrite it with the defined environment settings
-  _.extend(this.config, require(path.join(options.root, '/app/config/envs/' + this.config.environment)));
+  this.config = _.merge(this.config, require(path.join(options.root, '/app/config/envs/' + this.config.environment)));
 
   //Then extends it with the other settings
-  _.extend(this.config, {
+  this.config = _.merge(this.config, {
     session: require(path.join(options.root, '/app/config/session')),
     templateEngines: require(path.join(options.root, '/app/config/template-engines')),
     error: require(path.join(options.root, '/app/config/error/error')),

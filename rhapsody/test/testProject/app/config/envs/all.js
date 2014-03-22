@@ -8,12 +8,12 @@ module.exports = {
     name: 'rhapsodyTests'
   },
   log: {
-    level: 'info',
+    level: 'all',
     output: undefined,
     printStack: false,
     printLevel: true,
     time: true,
-    silent: true
+    silent: false
   },
   socket: {
     enabled: true
