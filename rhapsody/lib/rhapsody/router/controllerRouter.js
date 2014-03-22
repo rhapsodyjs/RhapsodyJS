@@ -66,11 +66,6 @@ ControllerRouter.prototype = {
             error.name = 'InvalidControllerName';
             this.rhapsody.log.error(error);
           }
-          if(files.indexOf('backbone-models') !== -1) {
-            var error = new Error('A first-level controller can\'t be named "static"');
-            error.name = 'InvalidControllerName';
-            this.rhapsody.log.error(error);
-          }
 
         }
 
@@ -138,9 +133,6 @@ ControllerRouter.prototype = {
           }
           if(rootViewName ===  'data') {
             throw {message: 'A root view controller can\'t be named "data"', name: 'InvalidViewName'};
-          }
-          if(rootViewName === 'backbone-models') {
-            throw {message: 'A root view controller can\'t be named "backbone-models"', name: 'InvalidViewName'};
           }
 
           this.bind(viewName, view, controllerInfo, subs, '/' + rootViewName);

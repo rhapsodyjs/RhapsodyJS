@@ -161,14 +161,11 @@ Rhapsody.prototype = {
       this.app.engine(templateEngines[engine].extension, engines[engine]);
     }
 
-    this.app.use(this.app.router); //Use the custom routes above the static and backbone-models
+    this.app.use(this.app.router); //Use the custom routes above the static
     this.app.get('/robots.txt', function(req, res) {
       res.sendfile(self.root + '/app/config/robots.txt');
     }); //Provide the robots.txt file
     this.app.use('/static', this.express.static(this.root + '/app/static')); //Static files should be here
-    //Backbone models should be here for facility
-    //the generated models will be in /backbone-models/gen/ModelName.js
-    this.app.use('/backbone-models', this.express.static(this.root + '/app/backbone-models'));
     this.app.use(this.config.error.error404Handler);
     this.app.use(this.config.error.error500Handler);
 
