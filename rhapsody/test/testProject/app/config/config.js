@@ -10,5 +10,7 @@ module.exports = {
 
     //If must be created REST routes for models
     allowREST: true
-  }
+  },
+
+  generateBackboneModels: false
 };

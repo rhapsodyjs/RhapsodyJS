@@ -94,7 +94,7 @@ var generateModels = function generateModels(app, buildBackboneModels) {
       var serverModel = generateServerModel(app, modelName, serverAttributes, serverValidations, requiredModel);
 
       //If, during the build, the Backbone models must be generated
-      if(buildBackboneModels) {
+      if((typeof app.config.generateBackboneModels === 'undefined' || app.config.generateBackboneModels) && buildBackboneModels) {
         generateClientModel(app, modelName, clientDefaults, requiredModel);
       }
 
