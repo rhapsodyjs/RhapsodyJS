@@ -1,6 +1,16 @@
 module.exports = {
   host: 'localhost',
-  port: 4242,
+
+  http: {
+    port: 4242,
+    socket: true
+  },
+
+  https: {
+    enabled: true,
+    port: 4243,
+    socket: true
+  },
   database: {
     enabled: true,
     host: 'localhost',
@@ -12,10 +22,7 @@ module.exports = {
     output: undefined,
     printStack: false,
     printLevel: true,
-    time: true,
-    silent: true
-  },
-  socket: {
-    enabled: true
+    time: false,
+    silent: false
   }
 };

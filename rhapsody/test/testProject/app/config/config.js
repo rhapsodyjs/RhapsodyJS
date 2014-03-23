@@ -12,5 +12,5 @@ module.exports = {
     allowREST: true
   },
 
-  generateBackboneModels: false
+  generateBackboneModels: true
 };

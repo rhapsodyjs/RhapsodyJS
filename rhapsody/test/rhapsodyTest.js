@@ -1,7 +1,7 @@
 'use strict';
 
 var chai = require('chai'),
-    request = require('supertest'),
+    supertest = require('supertest'),
     util = require('util');
 
 chai.expect();
@@ -24,11 +24,11 @@ describe('RhapsodyJS common tests', function() {
     });
 
     it('Main controller should not need to be named and responses must be equivalent', function(done) {
-      request(app)
+      supertest(app)
       .get('/login')
       .expect(200)
       .end(function(err, res) {
-        request(app)
+        supertest(app)
         .get('/main/login')
         .expect(function(secondRes) {
           expect(res.text).to.be.eql(secondRes.text);
@@ -38,7 +38,7 @@ describe('RhapsodyJS common tests', function() {
     });
 
     it('Should find the robots.txt file', function(done) {
-      request(app)
+      supertest(app)
       .get('/robots.txt')
       .expect(200)
       .end(function(err, res) {
@@ -48,7 +48,7 @@ describe('RhapsodyJS common tests', function() {
     });
 
     it('Should find the publicfile.txt file', function(done) {
-      request(app)
+      supertest(app)
       .get('/publicfile.txt')
       .expect(200)
       .end(function(err, res) {

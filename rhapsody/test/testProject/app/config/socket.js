@@ -7,7 +7,7 @@ module.exports = function socketConfig(io) {
   io.sockets.on('connection', function(socket) {
     socket.emit('heyClient', {hello: 'client'});
     socket.on('heyServer', function(data) {
-      console.log(data.hello);
+      Rhapsody.log.verbose(data.hello);
     })
   });
 };

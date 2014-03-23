@@ -1,7 +1,7 @@
 'use strict';
 
 var chai = require('chai'),
-    request = require('supertest');
+    supertest = require('supertest');
 
 chai.expect();
 chai.should();
@@ -23,7 +23,7 @@ describe('Middlewares tests', function() {
     });
 
     it('Should redirect if not logged', function(done) {
-      request(app)
+      supertest(app)
       .get('/admin')
       .expect(302)
       .end(done);

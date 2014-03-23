@@ -2,13 +2,13 @@
 <html>
 <head>
 	<title>First Backbone test</title>
-	<script src="js/jquery.js"></script>
-	<script src="js/underscore.js"></script>
-  <script src="js/backbone.js"></script>
+	<script src="/js/jquery.js"></script>
+	<script src="/js/underscore.js"></script>
+  <script src="/js/backbone.js"></script>
   <script src="/backbone-models/gen/User.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    var socket = io.connect('http://localhost');
+    var socket = io.connect('//localhost');
     socket.on('heyClient', function (data) {
       alert(data.hello);
       socket.emit('heyServer', { hello: 'server' });

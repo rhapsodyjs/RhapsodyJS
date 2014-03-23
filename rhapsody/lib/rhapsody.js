@@ -7,13 +7,11 @@ var path = require('path'),
 
 var Rhapsody = function Rhapsody(options) {
   var self = this,
-  ControllerRouter = require('./rhapsody/router/controllerRouter'),
-  ModelRouter = require('./rhapsody/router/modelRouter');
+      ControllerRouter = require('./rhapsody/router/controllerRouter'),
+      ModelRouter = require('./rhapsody/router/modelRouter');
 
   this.express = require('express');
   this.app = this.express();
-  //Save the server instance, so it can be used for with Socket.io
-  this.server = require('http').createServer(this.app);
   
   this.root = options.root;
 
@@ -32,9 +30,10 @@ var Rhapsody = function Rhapsody(options) {
 
   //Then extends it with the other settings
   this.config = _.merge(this.config, {
+    error: require(path.join(options.root, '/app/config/error/error')),
+    httpsOptions: require(path.join(options.root, '/app/config/https')),
     session: require(path.join(options.root, '/app/config/session')),
     templateEngines: require(path.join(options.root, '/app/config/template-engines')),
-    error: require(path.join(options.root, '/app/config/error/error')),
     options: options
   });
 
@@ -45,14 +44,23 @@ var Rhapsody = function Rhapsody(options) {
 
   this.log = require('./rhapsody/logger')(this.config.log);
 
+  this.servers = {};
+
+  //Configures the HTTP server
+  this.servers.http = require('http').createServer(this.app);
+
+  //Configures the HTTPS server
+  if(this.config.https.enabled) {    
+    this.servers.https = require('https').createServer(this.config.httpsOptions, this.app);
+  }
+
+  this.models = {};
 
   //If some uncaufh exception occurs, print it and then kill the process
   process.on('uncaughtException', function(err){
       self.log.fatal(err);
       process.exit(1);
   });
-
-  this.models = {};
 
   //Expose object as global
   //Should fix it latter
@@ -176,28 +184,47 @@ Rhapsody.prototype = {
     this.callbacks.bootstrap(this, finishedBootstrap);
   },
 
-  open: function open(callback) {
+  open: function open() {
     var self = this;
     var runServer = function runServer() {
-      if(self.config.socket.enabled) {
+      if(self.config.http.socket) {
 
-        //Creates and configure the Socket server
-        var io = require('socket.io').listen(self.server, {
+        //Creates and configure the Socket server for HTTP
+        var ioHTTP = require('socket.io').listen(self.servers.http, {
           logger: self.log,
           'log level': self.log.level
         });
 
         //Use the config/socket.js file
-        self.callbacks.socket(io, self.config.socket);
+        self.callbacks.socket(ioHTTP);
       }
 
-      var port = self.config.port;
-      self.server.listen(port);
-      Logger.info('Listening port ' + port);
+      var httpPort = self.config.http.port;
 
-      if(callback) {
-        callback(this.server);
+      //Open the HTTP server
+      self.servers.http.listen(httpPort);
+      Logger.info('Listening HTTP on port ' + httpPort);
+
+      if(self.config.https.enabled) {
+
+        if(self.config.https.socket) {
+          //Creates and configure the Socket server for HTTPS
+          var ioHTTPS = require('socket.io').listen(self.servers.https, {
+            logger: self.log,
+            'log level': self.log.level
+          });
+
+          //Use the config/socket.js file
+          self.callbacks.socket(ioHTTPS);
+        }
+
+        var httpsPort = self.config.https.port;
+
+        //Open the HTTPS server
+        self.servers.https.listen(httpsPort);
+        Logger.info('Listening HTTPS on port ' + httpsPort);
       }
+
     };
 
     //Configure the server before run it
@@ -205,7 +232,7 @@ Rhapsody.prototype = {
   },
 
   close: function close() {
-    this.server.close();
+    this.servers.http.close();
     Logger.warn('Server closed');
   }
 };

@@ -1,7 +1,7 @@
 'use strict';
 
 var chai = require('chai'),
-    request = require('supertest'),
+    supertest = require('supertest'),
     util = require('util');
 
 chai.expect();
@@ -84,7 +84,7 @@ describe('Model tests', function() {
         });
 
         newGroup.save(function(err) {
-          request(app)
+          supertest(app)
           .get('/data/Group/' + newGroup._id)
           .expect(200)
           .end(function(err, res) {
