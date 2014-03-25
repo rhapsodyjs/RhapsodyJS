@@ -46,5 +46,7 @@ module.exports = {
     allowREST: true
   },
 
+  enableCompression: true,
+
   generateClientModels: true
 };

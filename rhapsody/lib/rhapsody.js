@@ -116,7 +116,12 @@ Rhapsody.prototype = {
     //Configure express
     this.app.disable('x-powered-by'); //Disables the 'X-Powered-By: Express' on the HTTP header
 
-    //Actives http method overriding
+    //Actives response compression
+    if(this.config.enableCompression) {
+      this.app.use(this.express.compress());
+    }
+
+    //Actives HTTP method overriding
     if(this.config.methodOverride.enabled) {
       this.app.use(this.express.methodOverride(this.config.methodOverride.attributeName));
     }
