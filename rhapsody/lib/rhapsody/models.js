@@ -31,7 +31,7 @@ var generateModels = function generateModels(app, buildBackboneModels) {
   var jsFileRegex = /^\w+\.js$/i;
 
   var modelsPath = path.join(app.root, '/app/models'),
-      backboneModelsPath = path.join(app.root, '/app/public/backbone-models/gen/');
+      backboneModelsPath = path.join(app.root, '/app/public/models/gen/');
 
   //If the Backbone models are going to be generated
   // clean where they'll be saved
@@ -94,7 +94,7 @@ var generateModels = function generateModels(app, buildBackboneModels) {
       var serverModel = generateServerModel(app, modelName, serverAttributes, serverValidations, requiredModel);
 
       //If, during the build, the Backbone models must be generated
-      if((typeof app.config.generateBackboneModels === 'undefined' || app.config.generateBackboneModels) && buildBackboneModels) {
+      if((typeof app.config.generateClientModels === 'undefined' || app.config.generateClientModels) && buildBackboneModels) {
         generateClientModel(app, modelName, clientDefaults, requiredModel);
       }
 
@@ -178,7 +178,7 @@ var generateClientModel = function generateClientModel(app, modelName, clientDef
   //Minifies the file content
   backboneModelString = jsmin(backboneModelString);
 
-  var modelPath = path.join(app.root, '/app/public/backbone-models/gen/' + modelName + '.js');
+  var modelPath = path.join(app.root, '/app/public/models/gen/' + modelName + '.js');
 
   //Create the Backbone model file
   fs.writeFile(modelPath, backboneModelString, function(err) {

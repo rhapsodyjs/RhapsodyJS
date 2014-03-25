@@ -1,11 +1,22 @@
 module.exports = {
   host: 'localhost',
-  port: 4242,
+  http: {
+    port: 4242,
+    socket: true
+  },
+
+  https: {
+    enabled: true,
+    port: 4243,
+    socket: true
+  },
   database: {
     enabled: false,
     host: 'localhost',
     port: 27017,
-    name: 'rhapsody'
+    name: 'rhapsody',
+    username: undefined,
+    password: undefined
   },
   log: {
     level: 'debug',
@@ -14,8 +25,5 @@ module.exports = {
     printLevel: true,
     time: true,
     silent: false
-  },
-  socket: {
-    enabled: true
   }
 };

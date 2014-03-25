@@ -97,12 +97,16 @@ Rhapsody.prototype = {
     //If database is enabled, configure it
     if(this.config.database.enabled) {
       this.database = require('mongoose');
-      try {
-        this.dbConnection = this.database.createConnection(this.config.database.host, this.config.database.name);
+      
+      var mongoAddress = 'mongodb://';
+
+      if(typeof this.config.database.username !== 'undefined') {
+        mongoAddress += this.config.database.username + ':' + this.config.database.password + '@';
       }
-      catch(e) {
-        console.error(e.message);
-      }
+
+      mongoAddress += this.config.database.host + ':' + this.config.database.port + '/' + this.config.database.name;
+
+      this.dbConnection = this.database.createConnection(mongoAddress);
 
       //Create the models and put it on this.models
       this.generateModels(this, this.config.options.build);
@@ -111,6 +115,12 @@ Rhapsody.prototype = {
 
     //Configure express
     this.app.disable('x-powered-by'); //Disables the 'X-Powered-By: Express' on the HTTP header
+
+    //Actives http method overriding
+    if(this.config.methodOverride.enabled) {
+      this.app.use(this.express.methodOverride(this.config.methodOverride.attributeName));
+    }
+
     this.app.use(this.express.json()); //Parses the request body to JSON
     this.app.use(this.express.urlencoded()); //Actives URL encoded support
 
