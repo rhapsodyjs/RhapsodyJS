@@ -15,9 +15,6 @@ var MainController = {
       action: function(req, res) {
 
         // Rhapsody.log.oneLevel('to rule them all');
-        
-        Rhapsody.log.info(req.originalMethod);
-        Rhapsody.log.info(req.method);
 
         res.view({
           name: 'info.hbs',

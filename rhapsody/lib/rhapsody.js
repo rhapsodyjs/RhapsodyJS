@@ -6,6 +6,10 @@ var path = require('path'),
     Logger = new Wolverine(Wolverine.DEBUG);
 
 var Rhapsody = function Rhapsody(options) {
+  //Expose object as global
+  //Should fix it latter
+  global.Rhapsody = this;
+
   var self = this,
       ControllerRouter = require('./rhapsody/router/controllerRouter'),
       ModelRouter = require('./rhapsody/router/modelRouter');
@@ -56,15 +60,7 @@ var Rhapsody = function Rhapsody(options) {
 
   this.models = {};
 
-  //If some uncaufh exception occurs, print it and then kill the process
-  process.on('uncaughtException', function(err){
-      self.log.fatal(err);
-      process.exit(1);
-  });
-
-  //Expose object as global
-  //Should fix it latter
-  global.Rhapsody = this;
+  return this;
 
 };
 
@@ -163,13 +159,15 @@ Rhapsody.prototype = {
       next();
     });
 
-    this.app.use(this.express.session({ //Actives session support
+    //Actives session support
+    this.app.use(this.express.session({
       secret: this.config.session.sessionSecret,
       key: sessionIDKey,
       cookie: {
         httpOnly: true,
         maxAge: maxAge
-      }
+      },
+      store: this.config.session.sessionStore || new this.express.session.MemoryStore()
     }));
 
     //Uses consolidate to support the template engines
