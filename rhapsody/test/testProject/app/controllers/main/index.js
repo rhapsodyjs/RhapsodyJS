@@ -6,7 +6,7 @@ var MainController = {
     index: 'index.html',
 
     login: {
-      action: function(req, res) {
+      action: function(req, res, next) {
         res.view({
           name: 'login.hbs',
           locals: {

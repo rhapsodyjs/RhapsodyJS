@@ -241,9 +241,24 @@ ControllerRouter.prototype = {
   extractFunction: function extractFunction(view, controllerInfo) {
     //If it's a function, just return it
     if(typeof view === 'function') {
-      return function(req, res) {
-        view(req, new Response(res, controllerInfo.path));
+      var viewArity = view.length;
+
+      if(viewArity === 2) {
+        return function(req, res) {
+          view(req, new Response(res, controllerInfo.path));
+        }
       }
+      if(viewArity === 3) {
+        return function(req, res, next) {
+          view(req, new Response(res, controllerInfo.path), next);
+        }
+      }
+      if(viewArity === 4) {
+        return function(err, req, res, next) {
+          view(err, req, new Response(res, controllerInfo.path), next);
+        }
+      }
+      
     }
     //If it's just the path to a static file, send it
     else if(typeof view === 'string') {
