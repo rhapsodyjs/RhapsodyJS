@@ -6,7 +6,14 @@ var MainController = {
     index: 'index.html',
 
     login: {
-      action: 'login.html',
+      action: function(req, res) {
+        res.view({
+          name: 'login.hbs',
+          locals: {
+
+          }
+        });
+      },
       middlewares: ['not-logged'],
       customRoutes: ['/signin']
     },

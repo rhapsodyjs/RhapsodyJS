@@ -170,6 +170,15 @@ Rhapsody.prototype = {
       store: this.config.session.sessionStore || new this.express.session.MemoryStore()
     }));
 
+    //Actives CSRF protection
+    if(this.config.enableCSRF) {
+      this.app.use(this.express.csrf());
+      this.app.use(function (req, res, next) {
+        res.locals._csrf = req.csrfToken();
+        next();
+      });
+    }
+
     //Uses consolidate to support the template engines
     var engineRequires = this.config.templateEngines.engines,
         engines = require('./utils/consolidate')(engineRequires),

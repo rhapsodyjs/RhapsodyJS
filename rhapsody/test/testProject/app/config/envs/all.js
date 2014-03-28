@@ -48,5 +48,7 @@ module.exports = {
 
   enableCompression: true,
 
-  generateClientModels: true
+  generateClientModels: true,
+
+  enableCSRF: true
 };
