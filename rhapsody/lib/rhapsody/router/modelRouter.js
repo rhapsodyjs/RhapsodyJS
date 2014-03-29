@@ -37,7 +37,13 @@ ModelRouter.prototype = {
       //If the model has middlewares
       if(typeof model.options !== 'undefined' && _.isArray(model.options.middlewares)) {
         for(var i = 0; i < model.options.middlewares.length; i++) {
-          middleware = require(path.join(Rhapsody.root, '/app/middlewares/' + model.options.middlewares[i]));
+          if(typeof model.options.middlewares[i] === 'function') {
+            middleware = model.options.middlewares[i];
+          }
+          else {
+            middleware = require(path.join(Rhapsody.root, '/app/middlewares/' + model.options.middlewares[i]));
+          }
+
           this.app.post('/data/' + modelName, middleware);
           this.app.get('/data/' + modelName + '/:id?', middleware);
           this.app.put('/data/' + modelName + '/:id', middleware);

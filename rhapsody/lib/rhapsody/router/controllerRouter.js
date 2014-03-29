@@ -107,7 +107,13 @@ ControllerRouter.prototype = {
     if(_.isArray(controller.middlewares)) {
       var middleware;
       for(var i = 0; i < controller.middlewares.length; i++) {
-        middleware = require(path.join(this.rhapsody.root, '/app/middlewares/' + controller.middlewares[i]));
+        if(typeof controller.middlewares[i] === 'function') {
+          middleware = controller.middlewares[i];
+        }
+        else {
+          middleware = require(path.join(this.rhapsody.root, '/app/middlewares/' + controller.middlewares[i]));
+        }
+        
         //All verbs pass by the middleware
         this.app.all('/' + subs + '/?*', middleware);
       }
@@ -196,7 +202,13 @@ ControllerRouter.prototype = {
       if(hasMiddlewares) {
         var middlewares = [];
         for(var i = 0; i < view.middlewares.length; i++) {
-          middlewares[i] = require(path.join(this.rhapsody.root, '/app/middlewares/' + view.middlewares[i]));
+          if(typeof view.middlewares[i] === 'function') {
+            middlewares[i] = view.middlewares[i];
+          }
+          else {
+            middlewares[i] = require(path.join(this.rhapsody.root, '/app/middlewares/' + view.middlewares[i]));
+          }
+
           this.app[verb](routingPath, middlewares[i]);
         }
       }
