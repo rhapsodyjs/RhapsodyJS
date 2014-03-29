@@ -1,4 +1,4 @@
-var MongoStore = require('connect-mongo')(Rhapsody.express);
+var MongoStore = require('connect-mongo')(Rhapsody.libs.express);
 
 module.exports = {
   sessionIDKey: 'sessionIdentification',

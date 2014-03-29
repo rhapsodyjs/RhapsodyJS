@@ -1,7 +1,6 @@
 'use strict';
 
 var path = require('path'),
-    _ = require('lodash'),
     Wolverine = require('wolverine'),
     Logger = new Wolverine(Wolverine.DEBUG);
 
@@ -14,8 +13,15 @@ var Rhapsody = function Rhapsody(options) {
       ControllerRouter = require('./rhapsody/router/controllerRouter'),
       ModelRouter = require('./rhapsody/router/modelRouter');
 
-  this.express = require('express');
-  this.app = this.express();
+  this.libs = {
+    express: require('express'),
+    cors: require('cors'),
+    jsmin: require('jsmin').jsmin,
+    lodash: require('lodash'),
+    wolverine: require('wolverine')
+  };
+
+  this.app = this.libs.express();
   
   this.root = options.root;
 
@@ -27,13 +33,14 @@ var Rhapsody = function Rhapsody(options) {
   this.config = require(path.join(options.root, '/app/config/config'));
 
   //Get the general environment settings
-  this.config = _.merge(this.config, require(path.join(options.root, '/app/config/envs/all')));
+  this.config = this.libs.lodash.merge(this.config, require(path.join(options.root, '/app/config/envs/all')));
 
   //Overwrite it with the defined environment settings
-  this.config = _.merge(this.config, require(path.join(options.root, '/app/config/envs/' + this.config.environment)));
+  this.config = this.libs.lodash.merge(this.config, require(path.join(options.root, '/app/config/envs/' + this.config.environment)));
 
   //Then extends it with the other settings
-  this.config = _.merge(this.config, {
+  this.config = this.libs.lodash.merge(this.config, {
+    cors: require(path.join(options.root, '/app/config/cors')),
     error: require(path.join(options.root, '/app/config/error/error')),
     httpsOptions: require(path.join(options.root, '/app/config/https')),
     session: require(path.join(options.root, '/app/config/session')),
@@ -113,28 +120,28 @@ Rhapsody.prototype = {
     this.app.disable('x-powered-by'); //Disables the 'X-Powered-By: Express' on the HTTP header
 
     //Actives response compression
-    if(this.config.enableCompression) {
-      this.app.use(this.express.compress());
+    if(this.config.compression.enabled) {
+      this.app.use(this.libs.express.compress());
     }
 
     //Actives HTTP method overriding
     if(this.config.methodOverride.enabled) {
-      this.app.use(this.express.methodOverride(this.config.methodOverride.attributeName));
+      this.app.use(this.libs.express.methodOverride(this.config.methodOverride.attributeName));
     }
 
-    this.app.use(this.express.json()); //Parses the request body to JSON
-    this.app.use(this.express.urlencoded()); //Actives URL encoded support
+    this.app.use(this.libs.express.json()); //Parses the request body to JSON
+    this.app.use(this.libs.express.urlencoded()); //Actives URL encoded support
 
     var usingSignedCookie;
     var maxAge = this.config.session.maxAge;
 
     if(this.config.session.cookiesSecret) {
       usingSignedCookie = true;
-      this.app.use(this.express.cookieParser(this.config.session.cookiesSecret)); //Actives signed cookie support
+      this.app.use(this.libs.express.cookieParser(this.config.session.cookiesSecret)); //Actives signed cookie support
     }
     else {
       usingSignedCookie = false;
-      this.app.use(this.express.cookieParser()); //Actives unsigned cookie support
+      this.app.use(this.libs.express.cookieParser()); //Actives unsigned cookie support
     }
 
     //Refreshes the cookie time
@@ -148,6 +155,8 @@ Rhapsody.prototype = {
         cookieID = req.cookies[sessionIDKey];
       }
 
+      //Creates a new cookie with the same ID
+      //so it refreshes the time
       if(cookieID) {
         res.cookie(sessionIDKey, cookieID, {
           httpOnly: true,
@@ -160,23 +169,29 @@ Rhapsody.prototype = {
     });
 
     //Actives session support
-    this.app.use(this.express.session({
+    this.app.use(this.libs.express.session({
       secret: this.config.session.sessionSecret,
       key: sessionIDKey,
       cookie: {
         httpOnly: true,
         maxAge: maxAge
       },
-      store: this.config.session.sessionStore || new this.express.session.MemoryStore()
+      store: this.config.session.sessionStore || new this.libs.express.session.MemoryStore()
     }));
 
     //Actives CSRF protection
-    if(this.config.enableCSRF) {
-      this.app.use(this.express.csrf());
+    if(this.config.csrf.enabled) {
+      this.app.use(this.libs.express.csrf());
       this.app.use(function (req, res, next) {
         res.locals._csrf = req.csrfToken();
         next();
       });
+    }
+
+    //Actives CORS
+    if(this.config.cors.enabled) {
+      var corsConfig = this.libs.lodash.omit(this.config.cors, 'enabled');
+      this.app.use(this.libs.cors(corsConfig));
     }
 
     //Uses consolidate to support the template engines
@@ -199,7 +214,9 @@ Rhapsody.prototype = {
       this.router.modelRouter.route();
     }
 
-    this.app.use(this.express.static(this.root + '/app/public')); //Static files should be here
+    //Serve the /app/public file as the public folder
+    this.app.use(this.libs.express.static(this.root + '/app/public'));
+
     this.app.use(this.config.error.error404Handler);
     this.app.use(this.config.error.error500Handler);
 

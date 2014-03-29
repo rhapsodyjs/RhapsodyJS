@@ -2,8 +2,7 @@
 
 var fs = require('fs-extra'),
     _ = require('lodash'),
-    path = require('path'),
-    jsmin = require('jsmin').jsmin;
+    path = require('path');
 
 /**
  * Models can have the following attributes:
@@ -27,24 +26,24 @@ var fs = require('fs-extra'),
 /**
  * Generate client and server-side models
  */
-var generateModels = function generateModels(app, buildBackboneModels) {
+var generateModels = function generateModels(rhapsodyApp, buildBackboneModels) {
   var jsFileRegex = /^\w+\.js$/i;
 
-  var modelsPath = path.join(app.root, '/app/models'),
-      backboneModelsPath = path.join(app.root, '/app/public/models/gen/');
+  var modelsPath = path.join(rhapsodyApp.root, '/app/models'),
+      backboneModelsPath = path.join(rhapsodyApp.root, '/app/public/models/gen/');
 
   //If the Backbone models are going to be generated
   // clean where they'll be saved
   if(buildBackboneModels) {
     fs.removeSync(backboneModelsPath, function (err) {
       if(err) {
-        app.log.error(err);
+        rhapsodyApp.log.error(err);
         throw err;
       }
     });
     fs.mkdirSync(backboneModelsPath, function (err) {
       if(err) {
-        app.log.error(err);
+        rhapsodyApp.log.error(err);
         throw err;
       }
     });
@@ -91,14 +90,14 @@ var generateModels = function generateModels(app, buildBackboneModels) {
         }
       }
 
-      var serverModel = generateServerModel(app, modelName, serverAttributes, serverValidations, requiredModel);
+      var serverModel = generateServerModel(rhapsodyApp, modelName, serverAttributes, serverValidations, requiredModel);
 
       //If, during the build, the Backbone models must be generated
-      if((typeof app.config.generateClientModels === 'undefined' || app.config.generateClientModels) && buildBackboneModels) {
-        generateClientModel(app, modelName, clientDefaults, requiredModel);
+      if((typeof rhapsodyApp.config.generateClientModels === 'undefined' || rhapsodyApp.config.generateClientModels) && buildBackboneModels) {
+        generateClientModel(rhapsodyApp, modelName, clientDefaults, requiredModel);
       }
 
-      app.models[modelName] = {
+      rhapsodyApp.models[modelName] = {
         options: requiredModel.options,
         serverModel: serverModel,
         restrictedAttributes: restrictedAttributes
@@ -114,10 +113,10 @@ var generateModels = function generateModels(app, buildBackboneModels) {
  * @param  {Object} serverAttributes The attributes the model will have
  * @param  {Array} serverValidations      Array of validation names
  * @param  {Object} requiredModel    The generic model
- * @param {Rhapsody} app A Rhapsody app
+ * @param {Rhapsody} rhapsodyApp A Rhapsody app
  * @return {Mongoose Model}
  */
-var generateServerModel = function generateServerModel(app, modelName, serverAttributes, serverValidations, requiredModel) {
+var generateServerModel = function generateServerModel(rhapsodyApp, modelName, serverAttributes, serverValidations, requiredModel) {
   var attr,
       validation,
       validationArray;
@@ -134,13 +133,13 @@ var generateServerModel = function generateServerModel(app, modelName, serverAtt
     serverAttributes[attr].validate = validationArray;
   }
 
-  var schema = new app.database.Schema(serverAttributes);
+  var schema = new rhapsodyApp.database.Schema(serverAttributes);
 
   //Merge shared methods first, so it can be overwriten by specific server methods
   schema.methods = _.merge(schema.methods, requiredModel.sharedMethods);
   schema.methods = _.merge(schema.methods, requiredModel.serverMethods);
 
-  var serverModel = app.dbConnection.model(modelName, schema);
+  var serverModel = rhapsodyApp.dbConnection.model(modelName, schema);
   
   return serverModel;
 }
@@ -150,9 +149,9 @@ var generateServerModel = function generateServerModel(app, modelName, serverAtt
  * @param  {String} modelName      
  * @param  {Array} clientDefaults Array of default values of any attribute
  * @param  {Object} requiredModel  The generic model
- * @param  {Rhapsody} app            A Rhapsody app
+ * @param  {Rhapsody} rhapsodyApp            A Rhapsody app
  */
-var generateClientModel = function generateClientModel(app, modelName, clientDefaults, requiredModel) {
+var generateClientModel = function generateClientModel(rhapsodyApp, modelName, clientDefaults, requiredModel) {
   var urlRoot = '/data/' + modelName;
 
   //Possible fields of a Backbone.Model
@@ -176,14 +175,14 @@ var generateClientModel = function generateClientModel(app, modelName, clientDef
   });
 
   //Minifies the file content
-  backboneModelString = jsmin(backboneModelString);
+  backboneModelString = rhapsodyApp.libs.jsmin(backboneModelString);
 
-  var modelPath = path.join(app.root, '/app/public/models/gen/' + modelName + '.js');
+  var modelPath = path.join(rhapsodyApp.root, '/app/public/models/gen/' + modelName + '.js');
 
   //Create the Backbone model file
   fs.writeFile(modelPath, backboneModelString, function(err) {
     if(err) {
-      app.log.error(err);
+      rhapsodyApp.log.error(err);
       throw err;
     }
   });
