@@ -104,7 +104,12 @@ ModelRouter.prototype = {
             return _.omit(rawData.toObject(), restrictedAttributes);
           });
           Rhapsody.log.verbose('Data reading', 'All data was read from collection %s', req.params.model);
-          responseUtils.json(res, 200, filteredData); //No error, operation successful
+          if(req.query.callback) {
+            responseUtils.jsonp(res, 200, filteredData); //No error, operation successful
+          }
+          else {
+            responseUtils.json(res, 200, filteredData); //No error, operation successful
+          }
         }
       });
     }
@@ -123,7 +128,12 @@ ModelRouter.prototype = {
             //Gets the data without the restricted attributes
             var filteredData = _.omit(data.toObject(), restrictedAttributes);
             Rhapsody.log.verbose('Data reading', 'Data was read from collection %s', req.params.model);
-            responseUtils.json(res, 200, filteredData); //No error, operation successful
+            if(req.query.callback) {
+              responseUtils.jsonp(res, 200, filteredData); //No error, operation successful
+            }
+            else {
+              responseUtils.json(res, 200, filteredData); //No error, operation successful
+            }
           }
         }
       });

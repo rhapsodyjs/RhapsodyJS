@@ -109,7 +109,7 @@ Rhapsody.prototype = {
 
       mongoAddress += this.config.database.host + ':' + this.config.database.port + '/' + this.config.database.name;
 
-      this.dbConnection = this.database.createConnection(mongoAddress);
+      this.dbConnection = this.database.createConnection(mongoAddress, this.config.database.mongoOptions);
 
       //Create the models and put it on this.models
       this.generateModels(this, this.config.options.build);

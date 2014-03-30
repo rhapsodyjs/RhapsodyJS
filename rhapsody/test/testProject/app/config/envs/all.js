@@ -23,7 +23,8 @@ module.exports = {
     port: 27017,
     name: 'rhapsodyTests',
     username: undefined,
-    password: undefined
+    password: undefined,
+    mongoOptions: {}
   },
   
   log: {

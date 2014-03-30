@@ -15,5 +15,9 @@ module.exports = {
 
   json: function json(res, code, data) {
     res.json(code, data);
+  },
+
+  jsonp: function jsonp(res, code, data) {
+    res.jsonp(code, data);
   }
 }
