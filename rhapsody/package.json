@@ -40,7 +40,8 @@
     "mongoose": "^3.8.8",
     "nomnom": "^1.6.2",
     "fs-extra": "^0.8.1",
-    "cors": "^2.2.0"
+    "cors": "^2.2.0",
+    "session.socket.io": "^0.1.6"
   },
   "devDependencies": {
     "mocha": "^1.18.0",

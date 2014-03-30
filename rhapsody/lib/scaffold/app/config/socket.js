@@ -3,5 +3,5 @@
  * Except that related with logging
  */
 
-module.exports = function socketConfig(io) {
+module.exports = function socketConfig(io, sessionSockets) {
 };

@@ -1,6 +1,7 @@
 var MongoStore = require('connect-mongo')(Rhapsody.libs.express);
 
 module.exports = {
+  enabled: true,
   sessionIDKey: 'sessionIdentification',
   cookiesSecret: 'rhapsody',
   sessionSecret: 'rhapsody',

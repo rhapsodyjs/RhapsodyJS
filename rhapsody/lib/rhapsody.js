@@ -132,52 +132,61 @@ Rhapsody.prototype = {
     this.app.use(this.libs.express.json()); //Parses the request body to JSON
     this.app.use(this.libs.express.urlencoded()); //Actives URL encoded support
 
-    var usingSignedCookie;
-    var maxAge = this.config.session.maxAge;
+    //Actives the session/cookie support
+    if(this.config.session.enabled) {
+      var usingSignedCookie,
+          maxAge = this.config.session.maxAge;
 
-    if(this.config.session.cookiesSecret) {
-      usingSignedCookie = true;
-      this.app.use(this.libs.express.cookieParser(this.config.session.cookiesSecret)); //Actives signed cookie support
-    }
-    else {
-      usingSignedCookie = false;
-      this.app.use(this.libs.express.cookieParser()); //Actives unsigned cookie support
-    }
-
-    //Refreshes the cookie time
-    this.app.use(function(req, res, next) {
-      var cookieID;
-
-      if(usingSignedCookie) {
-        cookieID = req.signedCookies[sessionIDKey];
+      if(this.config.session.cookiesSecret) {
+        usingSignedCookie = true;
+        this.cookieParser = this.libs.express.cookieParser(this.config.session.cookiesSecret);
+        //Actives signed cookie support
+        this.app.use(this.cookieParser);
       }
       else {
-        cookieID = req.cookies[sessionIDKey];
+        usingSignedCookie = false;
+        this.cookieParser = this.libs.express.cookieParser();
+        //Actives unsigned cookie support
+        this.app.use(this.cookieParser);
       }
 
-      //Creates a new cookie with the same ID
-      //so it refreshes the time
-      if(cookieID) {
-        res.cookie(sessionIDKey, cookieID, {
+      //Refreshes the cookie time
+      this.app.use(function(req, res, next) {
+        var cookieID;
+
+        if(usingSignedCookie) {
+          cookieID = req.signedCookies[sessionIDKey];
+        }
+        else {
+          cookieID = req.cookies[sessionIDKey];
+        }
+
+        //Creates a new cookie with the same ID
+        //so it refreshes the time
+        if(cookieID) {
+          res.cookie(sessionIDKey, cookieID, {
+            httpOnly: true,
+            signed: usingSignedCookie,
+            maxAge: maxAge
+          });
+        }
+
+        next();
+      });
+
+      this.config.session.sessionStore = this.config.session.sessionStore || new this.libs.express.session.MemoryStore();
+
+      //Actives session support
+      this.app.use(this.libs.express.session({
+        secret: this.config.session.sessionSecret,
+        key: sessionIDKey,
+        cookie: {
           httpOnly: true,
-          signed: usingSignedCookie,
           maxAge: maxAge
-        });
-      }
-
-      next();
-    });
-
-    //Actives session support
-    this.app.use(this.libs.express.session({
-      secret: this.config.session.sessionSecret,
-      key: sessionIDKey,
-      cookie: {
-        httpOnly: true,
-        maxAge: maxAge
-      },
-      store: this.config.session.sessionStore || new this.libs.express.session.MemoryStore()
-    }));
+        },
+        store: this.config.session.sessionStore
+      }));
+    }
 
     //Actives CSRF protection
     if(this.config.csrf.enabled) {
@@ -226,16 +235,27 @@ Rhapsody.prototype = {
   open: function open() {
     var self = this;
     var runServer = function runServer() {
-      if(self.config.http.socket) {
+      var SessionSockets = require('session.socket.io');
 
-        //Creates and configure the Socket server for HTTP
+      //If socket is enabled for HTTP
+      if(self.config.http.socket) {
         var ioHTTP = require('socket.io').listen(self.servers.http, {
           logger: self.log,
           'log level': self.log.level
         });
 
+        var sessionIoHTTP;
+
+        //If session must be used with the session
+        if(self.config.session.enabled) {
+          sessionIoHTTP = new SessionSockets(ioHTTP, self.config.session.sessionStore, self.cookieParser, self.config.session.sessionIDKey || 'sessionID');
+        }
+        else {
+          sessionIoHTTP = undefined;
+        }
+
         //Use the config/socket.js file
-        self.callbacks.socket(ioHTTP);
+        self.callbacks.socket(ioHTTP, sessionIoHTTP);
       }
 
       var httpPort = self.config.http.port;
@@ -246,15 +266,25 @@ Rhapsody.prototype = {
 
       if(self.config.https.enabled) {
 
+        //If socket is enabled for HTTPS
         if(self.config.https.socket) {
-          //Creates and configure the Socket server for HTTPS
           var ioHTTPS = require('socket.io').listen(self.servers.https, {
             logger: self.log,
             'log level': self.log.level
           });
 
+          var sessionIoHTTPS;
+
+          //If session must be used with the session
+          if(self.config.session.enabled) {
+            sessionIoHTTPS = new SessionSockets(ioHTTPS, self.config.session.sessionStore, self.cookieParser, self.config.session.sessionIDKey || 'sessionID');
+          }
+          else {
+            sessionIoHTTPS = undefined;
+          }
+
           //Use the config/socket.js file
-          self.callbacks.socket(ioHTTPS);
+          self.callbacks.socket(ioHTTPS, sessionIoHTTPS);
         }
 
         var httpsPort = self.config.https.port;
