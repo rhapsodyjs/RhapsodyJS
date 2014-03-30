@@ -87,7 +87,15 @@ Rhapsody.prototype = {
       return (model ? model : false);
     }
     return (model ? model.serverModel : false);
-    
+  },
+
+  /**
+   * Returns a class inside the /app/classes folder
+   * @param  {String} className The name (or path) of the class to be required
+   * @return {*}           A class
+   */
+  requireClass: function requireClass(className) {
+    return require(path.join(this.root, '/app/classes/' + className));
   },
 
   /**

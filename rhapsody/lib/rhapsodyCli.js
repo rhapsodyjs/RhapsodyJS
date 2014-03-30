@@ -56,7 +56,7 @@ var msg = {
   }
 };
 
-var server = {
+var serverOperations = {
   build: function build() {
     //Imports the local RhapsodyJS of the app
     var Rhapsody = require(path.join(appPath, '/node_modules/rhapsody')),
@@ -148,7 +148,7 @@ parser.command('build').callback(function(opts) {
   if(extras.length > 1) {
     return msg.usage('build');
   }
-  server.build();
+  serverOperations.build();
   return;
 }).help('Build the server without run it');
 
@@ -172,11 +172,11 @@ parser.command('run')
 
   //If the no-build flas was passed, just run the server without build it
   if(opts['no-build']) {
-    server.run();
+    serverOperations.run();
   }
   else {
     //Build the server, than pass it to be run
-    server.run(server.build());
+    serverOperations.run(serverOperations.build());
   }
 
 }).help('Build the server then run it. If -n or --no-build is passed, run the server without build it');

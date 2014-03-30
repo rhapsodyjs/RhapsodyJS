@@ -57,6 +57,11 @@ describe('RhapsodyJS common tests', function() {
       });
     });
 
+    it('Should correctly require a class', function() {
+        var Class = server.requireClass('Test');
+        var object = new Class();
+        expect(object.method()).to.be.eql('Test');
+    });
 
 });
 

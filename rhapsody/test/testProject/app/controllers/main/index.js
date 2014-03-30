@@ -41,6 +41,12 @@ var MainController = {
       else {
         res.send(404);
       }
+    },
+
+    classTest: function(req, res) {
+      var Class = Rhapsody.requireClass('Test');
+      var object = new Class();
+      res.send(object.method());
     }
   }
 }
