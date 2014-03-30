@@ -1,0 +1,13 @@
+<html>
+<head>
+  <title>Login</title>
+</head>
+<body>
+  <form action="/enter" method="post">
+   <label for="user">Username</label>
+   <input type="text" name="user" id="user">
+   <input type="hidden" name="_csrf" value="{{_csrf}}">
+   <input type="submit">
+  </form>
+</body>
+</html>

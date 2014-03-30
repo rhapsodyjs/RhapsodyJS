@@ -1,0 +1,56 @@
+{
+  "name": "rhapsody",
+  "description": "Lib HMVC for NodeJS",
+  "version": "0.1.2-beta",
+  "homepage": "https://github.com/rhapsodyjs/rhapsodyjs",
+  "author": {
+    "name": "talyssonoc",
+    "email": "talyssonoc@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/rhapsodyjs/rhapsodyjs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rhapsodyjs/rhapsodyjs/issues"
+  },
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "keywords": [
+    "mvc",
+    "hmvc",
+    "framework",
+    "rest",
+    "restful"
+  ],
+  "main": "./lib/rhapsody",
+  "bin": {
+    "rhapsody": "./lib/rhapsodyCli.js"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "dependencies": {
+    "express": "3.x",
+    "jsmin": ">=1.0.1",
+    "wolverine": "0.0.7",
+    "socket.io": "^0.9.16",
+    "lodash": ">=2.4.1",
+    "mongoose": "^3.8.8",
+    "nomnom": "^1.6.2",
+    "fs-extra": "^0.8.1",
+    "cors": "^2.2.0",
+    "session.socket.io": "^0.1.6"
+  },
+  "devDependencies": {
+    "mocha": "^1.18.0",
+    "chai": "^1.9.0",
+    "supertest": "^0.9.0",
+    "grunt-mocha-cli": "^1.7.0",
+    "load-grunt-tasks": "^0.4.0",
+    "time-grunt": "^0.2.10",
+    "grunt": "^0.4.4",
+    "request": "^2.34.0"
+  }
+}
