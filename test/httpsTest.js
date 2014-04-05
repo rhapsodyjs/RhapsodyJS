@@ -37,7 +37,5 @@ describe('RhapsodyJS HTTPS tests', function() {
         });
       });
     });
-
-
 });
 
