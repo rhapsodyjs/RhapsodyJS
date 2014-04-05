@@ -1,6 +1,8 @@
 module.exports = {
   host: 'localhost',
 
+  enableUpload: true,
+
   http: {
     port: 4242,
     socket: true

@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 var MainController = {
   mainView: 'index',
   
@@ -47,6 +49,15 @@ var MainController = {
       var Class = Rhapsody.requireClass('Test');
       var object = new Class();
       res.send(object.method());
+    },
+
+    'post:uploadTest': function(req, res) {
+      fs.readFile(req.files.file.path, function (err, data) {
+        var newPath = Rhapsody.root + '/app/public/uploads/file';
+        fs.writeFile(newPath, data, function (err) {
+          res.redirect('/');
+        });
+      });
     }
   }
 }
