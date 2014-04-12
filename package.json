@@ -32,7 +32,7 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "express": "3.x",
+    "express": "4.x",
     "jsmin": ">=1.0.1",
     "wolverine": "*",
     "socket.io": "^0.9.16",
@@ -41,7 +41,14 @@
     "nomnom": "^1.6.2",
     "fs-extra": "^0.8.1",
     "cors": "^2.2.0",
-    "session.socket.io": "^0.1.6"
+    "session.socket.io": "^0.1.6",
+    "compression": "^1.0.1",
+    "method-override": "^1.0.0",
+    "body-parser": "^1.0.1",
+    "connect-multiparty": "^1.0.3",
+    "cookie-parser": "^1.0.1",
+    "express-session": "^1.0.2",
+    "csurf": "^1.1.0"
   },
   "devDependencies": {
     "mocha": "^1.18.0",
