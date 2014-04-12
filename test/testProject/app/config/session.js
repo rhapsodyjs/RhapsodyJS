@@ -1,12 +1,7 @@
-var MongoStore = require('connect-mongo')(Rhapsody.libs.express);
-
 module.exports = {
   enabled: true,
   sessionIDKey: 'sessionIdentification',
   cookiesSecret: 'rhapsody',
   sessionSecret: 'rhapsody',
-  maxAge: 70000,
-  sessionStore: new MongoStore({
-    url: 'mongodb://localhost:27017/rhapsodySession'
-  })
+  maxAge: 70000
 };
