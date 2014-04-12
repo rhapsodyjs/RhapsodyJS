@@ -3,5 +3,6 @@ module.exports = {
   sessionIDKey: 'sessionIdentification',
   cookiesSecret: 'rhapsody',
   sessionSecret: 'rhapsody',
-  maxAge: 70000
+  maxAge: 70000,
+  sessionStore: undefined
 };
