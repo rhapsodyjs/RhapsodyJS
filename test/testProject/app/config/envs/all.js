@@ -1,8 +1,6 @@
 module.exports = {
   host: 'localhost',
 
-  enableUpload: true,
-
   http: {
     port: 4242,
     socket: true
@@ -47,6 +45,10 @@ module.exports = {
 
     //If must be created REST routes for models
     allowREST: true
+  },
+
+  upload: {
+    enabled: true,
   },
 
   compression: {
