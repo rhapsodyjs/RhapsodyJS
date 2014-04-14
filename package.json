@@ -1,7 +1,7 @@
 {
   "name": "rhapsody",
-  "description": "Lib HMVC for NodeJS",
-  "version": "0.1.3",
+  "description": "HMVC framework for NodeJS",
+  "version": "0.1.4-beta",
   "homepage": "https://github.com/rhapsodyjs/rhapsodyjs",
   "author": {
     "name": "talyssonoc",

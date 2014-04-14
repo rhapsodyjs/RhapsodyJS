@@ -11,7 +11,7 @@ Surf the documentation files to understand any of the features, and see the [exa
 To install RhapsodyJS, you must run the command:
 
 ```
-    $ node install rhapsody --global 
+    $ npm install rhapsody --global 
 ```
 
 ## New app
