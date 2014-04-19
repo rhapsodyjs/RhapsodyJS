@@ -38,3 +38,7 @@ And then your app will be running in `localhost:4242`
 ## Documentation
 
 Click here to see [RhapsodyJS documentation](https://github.com/rhapsodyjs/RhapsodyJS-docs)
+
+## Examples
+
+Click here to see some [example apps](https://github.com/rhapsodyjs/RhapsodyJS-examples)
