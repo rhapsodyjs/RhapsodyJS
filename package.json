@@ -1,7 +1,7 @@
 {
   "name": "rhapsody",
   "description": "HMVC framework for NodeJS",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "homepage": "https://github.com/rhapsodyjs/rhapsodyjs",
   "author": {
     "name": "talyssonoc",
@@ -32,7 +32,7 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "ajax-only": "0.0.1",
+    "ajax-only": "^0.0.2",
     "body-parser": "^1.0.1",
     "compression": "^1.0.1",
     "connect-multiparty": "^1.0.3",
@@ -47,9 +47,10 @@
     "method-override": "^1.0.0",
     "mongoose": "^3.8.8",
     "nomnom": "^1.6.2",
+    "secure-only": "^0.0.2",
     "session.socket.io": "^0.1.6",
     "socket.io": "^0.9.16",
-    "wolverine": "*"
+    "wolverine": "^0.0.8"
   },
   "devDependencies": {
     "mocha": "^1.18.0",

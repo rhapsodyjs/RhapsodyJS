@@ -2,7 +2,7 @@
   "name": "sample",
   "main": "app",
   "dependencies": {
-    "rhapsody": "*",
+    "rhapsody": "^0.1.7",
     "ejs": "^0.8.5",
     "handlebars": "^2.0.0-alpha.2",
     "connect-mongo": "^0.4.0"
