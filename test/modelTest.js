@@ -42,7 +42,8 @@ describe('Model tests', function() {
 
         var newGroup = new Group({
           name: 'Test Group',
-          registry: 10
+          registry: 10,
+          acronym: 'TG'
         });
 
         newGroup.save(function(err) {
@@ -64,7 +65,8 @@ describe('Model tests', function() {
 
         var newGroup = new Group({
           name: 'Invalid Group',
-          registry: -1
+          registry: -1,
+          acronym: 'IG'
         });
 
         newGroup.save(function(err) {
@@ -80,8 +82,9 @@ describe('Model tests', function() {
         var Group = models['Group'];
 
         var newGroup = new Group({
-          name: 'API Group',
-          registry: 200
+          name: 'API Group #1',
+          registry: 100,
+          acronym: 'AG1'
         });
 
         newGroup.save(function(err) {
@@ -95,6 +98,7 @@ describe('Model tests', function() {
 
           expect(addedGroup.name).to.be.equal(returnedGroup.name);
           expect(addedGroup.registry).to.be.equal(returnedGroup.registry);
+          expect(addedGroup.acronym).to.be.equal(returnedGroup.acronym);
           expect(addedGroup._id).to.be.equal(returnedGroup._id);
 
           done();
@@ -107,8 +111,9 @@ describe('Model tests', function() {
         var Group = models['Group'];
 
         var newGroup = new Group({
-          name: 'API Group',
-          registry: 200
+          name: 'API Group #2',
+          registry: 200,
+          acronym: 'AG2'
         });
 
         newGroup.save(function(err) {
@@ -122,12 +127,73 @@ describe('Model tests', function() {
 
           expect(addedGroup.name).to.be.equal(returnedGroup.name);
           expect(addedGroup.registry).to.be.equal(returnedGroup.registry);
+          expect(addedGroup.acronym).to.be.equal(returnedGroup.acronym);
           expect(addedGroup._id).to.be.equal(returnedGroup._id);
 
           done();
 
           });
         });
+      });
+
+      it('Should return just some attributes reading one', function(done) {
+        var Group = models['Group'];
+
+        var newGroup = new Group({
+          name: 'API Group #3',
+          registry: 300,
+          acronym: 'AG3'
+        });
+
+        newGroup.save(function(err) {
+          supertest(app)
+          .get('/data/Group/' + newGroup._id + '?attrs=name,acronym')
+          .expect(200)
+          .end(function(err, res) {
+
+          var addedGroup = JSON.parse(JSON.stringify(newGroup));
+          var returnedGroup = res.body;
+
+          expect(returnedGroup.name).to.be.equal(addedGroup.name);
+          expect(returnedGroup.registry).to.be.undefined;
+          expect(addedGroup.acronym).to.be.equal(returnedGroup.acronym);
+          expect(returnedGroup._id).to.be.equal(addedGroup._id);
+
+          done();
+
+          });
+        });
+
+      });
+
+      it('Should return just some attributes reading many', function(done) {
+        var Group = models['Group'];
+
+        var newGroup = new Group({
+          name: 'API Group #4',
+          registry: 400,
+           acronym: 'AG4'
+        });
+
+        newGroup.save(function(err) {
+          supertest(app)
+          .get('/data/Group/?attrs=name,registry')
+          .expect(200)
+          .end(function(err, res) {
+
+          var addedGroup = JSON.parse(JSON.stringify(newGroup));
+          var returnedGroup = res.body[res.body.length - 1];
+
+          expect(returnedGroup.name).to.be.equal(addedGroup.name);
+          expect(returnedGroup.registry).to.equal(addedGroup.registry);
+          expect(returnedGroup.acronym).to.be.undefined;
+          expect(returnedGroup._id).to.be.equal(addedGroup._id);
+
+          done();
+
+          });
+        });
+
       });
 
     });

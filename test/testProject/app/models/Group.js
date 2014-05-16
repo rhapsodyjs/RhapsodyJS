@@ -4,7 +4,8 @@ var Group = {
     registry: {
       type: Number,
       serverValidations: ['notNegative']
-    }
+    },
+    acronym: String
   },
 
   sharedMethods: {
