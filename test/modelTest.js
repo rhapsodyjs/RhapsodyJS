@@ -75,7 +75,8 @@ describe('Model tests', function() {
     });
 
     describe('Tests with the RESTful API', function() {
-      it('The data inserted must be equal to the received via API', function(done) {
+
+      it('The data inserted must be equal to the received via API #1 - searching one', function(done) {
         var Group = models['Group'];
 
         var newGroup = new Group({
@@ -101,6 +102,34 @@ describe('Model tests', function() {
           });
         });
       });
+
+      it('The data inserted must be equal to the received via API #2 - searching many', function(done) {
+        var Group = models['Group'];
+
+        var newGroup = new Group({
+          name: 'API Group',
+          registry: 200
+        });
+
+        newGroup.save(function(err) {
+          supertest(app)
+          .get('/data/Group/')
+          .expect(200)
+          .end(function(err, res) {
+
+          var addedGroup = JSON.parse(JSON.stringify(newGroup));
+          var returnedGroup = res.body[res.body.length - 1];
+
+          expect(addedGroup.name).to.be.equal(returnedGroup.name);
+          expect(addedGroup.registry).to.be.equal(returnedGroup.registry);
+          expect(addedGroup._id).to.be.equal(returnedGroup._id);
+
+          done();
+
+          });
+        });
+      });
+
     });
 
 
