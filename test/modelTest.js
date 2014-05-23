@@ -84,7 +84,8 @@ describe('Model tests', function() {
         var newGroup = new Group({
           name: 'API Group #1',
           registry: 100,
-          acronym: 'AG1'
+          acronym: 'AG1',
+          restrictedAttr: 'restricted !'
         });
 
         newGroup.save(function(err) {
@@ -100,6 +101,7 @@ describe('Model tests', function() {
           expect(addedGroup.registry).to.be.equal(returnedGroup.registry);
           expect(addedGroup.acronym).to.be.equal(returnedGroup.acronym);
           expect(addedGroup._id).to.be.equal(returnedGroup._id);
+          expect(returnedGroup.restrictedAttr).to.not.exist;
 
           done();
 
@@ -113,7 +115,8 @@ describe('Model tests', function() {
         var newGroup = new Group({
           name: 'API Group #2',
           registry: 200,
-          acronym: 'AG2'
+          acronym: 'AG2',
+          restrictedAttr: 'restricted !'
         });
 
         newGroup.save(function(err) {
@@ -129,6 +132,7 @@ describe('Model tests', function() {
           expect(addedGroup.registry).to.be.equal(returnedGroup.registry);
           expect(addedGroup.acronym).to.be.equal(returnedGroup.acronym);
           expect(addedGroup._id).to.be.equal(returnedGroup._id);
+          expect(returnedGroup.restrictedAttr).to.not.exist;
 
           done();
 
@@ -142,7 +146,8 @@ describe('Model tests', function() {
         var newGroup = new Group({
           name: 'API Group #3',
           registry: 300,
-          acronym: 'AG3'
+          acronym: 'AG3',
+          restrictedAttr: 'restricted !'
         });
 
         newGroup.save(function(err) {
@@ -155,9 +160,10 @@ describe('Model tests', function() {
           var returnedGroup = res.body;
 
           expect(returnedGroup.name).to.be.equal(addedGroup.name);
-          expect(returnedGroup.registry).to.be.undefined;
+          expect(returnedGroup.registry).to.not.exist;
           expect(addedGroup.acronym).to.be.equal(returnedGroup.acronym);
           expect(returnedGroup._id).to.be.equal(addedGroup._id);
+          expect(returnedGroup.restrictedAttr).to.not.exist;
 
           done();
 
@@ -172,7 +178,8 @@ describe('Model tests', function() {
         var newGroup = new Group({
           name: 'API Group #4',
           registry: 400,
-           acronym: 'AG4'
+          acronym: 'AG4',
+          restrictedAttr: 'restricted !'
         });
 
         newGroup.save(function(err) {
@@ -186,8 +193,9 @@ describe('Model tests', function() {
 
           expect(returnedGroup.name).to.be.equal(addedGroup.name);
           expect(returnedGroup.registry).to.equal(addedGroup.registry);
-          expect(returnedGroup.acronym).to.be.undefined;
+          expect(returnedGroup.acronym).to.not.exist;
           expect(returnedGroup._id).to.be.equal(addedGroup._id);
+          expect(returnedGroup.restrictedAttr).to.not.exist;
 
           done();
 
@@ -195,6 +203,78 @@ describe('Model tests', function() {
         });
 
       });
+
+      it('The request to insert new data should return it without the restrict attributes', function(done) {
+        var addedGroup = {
+          name: 'API Group #5',
+          registry: 500,
+          acronym: 'AG5',
+          restrictedAttr: 'restricted !'
+        };
+
+        supertest(app)
+        .post('/data/Group')
+        .send(addedGroup)
+        .expect(201)
+        .end(function(err, res) {
+          expect(err).to.not.exist;
+
+          var returnedGroup = res.body;
+
+          expect(returnedGroup.name).to.be.equal(addedGroup.name);
+          expect(returnedGroup.registry).to.equal(addedGroup.registry);
+          expect(returnedGroup.acronym).to.equal(addedGroup.acronym);
+          expect(returnedGroup.restrictedAttr).to.not.exist;
+
+          done();
+        });
+      });
+
+      it('The request to update data should return status 202', function(done) {
+        var Group = models['Group'];
+
+        var addedGroup = new Group({
+          name: 'API Group',
+          registry: 600,
+          acronym: 'AG6',
+          restrictedAttr: 'restricted !'
+        });
+
+        addedGroup.save(function(err) {
+          var updatedGroup = addedGroup;
+
+          updatedGroup.acronym = 'UG';
+
+          supertest(app)
+          .put('/data/Group/' + addedGroup._id)
+          .send(updatedGroup)
+          .expect(202)
+          .end(done);
+        });
+      });
+
+      it('The request to delete data should return status 202', function(done) {
+        var Group = models['Group'];
+
+        var addedGroup = new Group({
+          name: 'API Group',
+          registry: 700,
+          acronym: 'AG7',
+          restrictedAttr: 'restricted !'
+        });
+
+        addedGroup.save(function(err) {
+          var updatedGroup = addedGroup;
+
+          updatedGroup.acronym = 'UG';
+
+          supertest(app)
+          .del('/data/Group/' + addedGroup._id)
+          .expect(202)
+          .end(done);
+        });
+      });
+
 
     });
 

@@ -5,7 +5,11 @@ var Group = {
       type: Number,
       serverValidations: ['notNegative']
     },
-    acronym: String
+    acronym: String,
+    restrictedAttr: {
+      type: String,
+      restricted: true
+    }
   },
 
   sharedMethods: {

@@ -5,11 +5,11 @@ var User = {
 			type: Number,
 			serverValidations: ['notNegative']
 		},
-    password: {
-      type: String,
-      restricted: true,
-      required: true
-    }
+		password: {
+			type: String,
+			restricted: true,
+			required: true
+		}
 	},
 
 	sharedMethods: {
@@ -24,11 +24,11 @@ var User = {
 
 	serverMethods: {
 		customMethod: function() {
-      return 'Optional content';
-    },
-    notNegative: function(value) {
-      return value >= 0;
-    }
+			return 'Optional content';
+		},
+		notNegative: function(value) {
+			return value >= 0;
+		}
 	},
 
 	options: {
