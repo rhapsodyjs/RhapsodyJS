@@ -21,13 +21,16 @@ var Group = {
   },
 
   serverMethods: {
-    notNegative: function(value) {
-      return value >= 0;
+    notNegative: function(err) {
+      if(this.registry < 0) {
+        err();
+      }
     }
   },
 
   options: {
-    allowREST: true
+    allowREST: true,
+    adapter: 'mongodb'
   }
 };
 

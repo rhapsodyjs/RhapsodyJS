@@ -25,7 +25,7 @@ describe('Model tests', function() {
 
     after(function(done) {
         var Group = models['Group'];
-        Group.remove({}, function(err) {
+        Group.destroyAll(function(err) {
           if(!err) {
             server.log.warn('Empty database', 'All groups deleted.');
           }
@@ -54,7 +54,7 @@ describe('Model tests', function() {
       it('Sucessfully find an item in the database', function(done) {
         var Group = models['Group'];
 
-        Group.findOne({registry: 10}, function(err, data) {
+        Group.findOne({ where: {registry: 10} }, function(err, data) {
           expect(data.name).to.equal('Test Group');
           done();
         });
@@ -151,8 +151,9 @@ describe('Model tests', function() {
         });
 
         newGroup.save(function(err) {
+
           supertest(app)
-          .get('/data/Group/' + newGroup._id + '?attrs=name,acronym')
+          .get('/data/Group/' + newGroup.id + '?attrs=name,acronym')
           .expect(200)
           .end(function(err, res) {
 
@@ -162,7 +163,7 @@ describe('Model tests', function() {
           expect(returnedGroup.name).to.be.equal(addedGroup.name);
           expect(returnedGroup.registry).to.not.exist;
           expect(addedGroup.acronym).to.be.equal(returnedGroup.acronym);
-          expect(returnedGroup._id).to.be.equal(addedGroup._id);
+          expect(returnedGroup.id).to.be.equal(addedGroup.id);
           expect(returnedGroup.restrictedAttr).to.not.exist;
 
           done();
@@ -194,7 +195,7 @@ describe('Model tests', function() {
           expect(returnedGroup.name).to.be.equal(addedGroup.name);
           expect(returnedGroup.registry).to.equal(addedGroup.registry);
           expect(returnedGroup.acronym).to.not.exist;
-          expect(returnedGroup._id).to.be.equal(addedGroup._id);
+          expect(returnedGroup.id).to.be.equal(addedGroup.id);
           expect(returnedGroup.restrictedAttr).to.not.exist;
 
           done();
@@ -246,10 +247,20 @@ describe('Model tests', function() {
           updatedGroup.acronym = 'UG';
 
           supertest(app)
-          .put('/data/Group/' + addedGroup._id)
+          .put('/data/Group/' + addedGroup.id)
           .send(updatedGroup)
           .expect(202)
-          .end(done);
+          .end(function(err, res) {
+
+            var returnedGroup = res.body;
+            expect(returnedGroup.name).to.be.equal(updatedGroup.name);
+            expect(returnedGroup.registry).to.equal(updatedGroup.registry);
+            expect(returnedGroup.acronym).to.equal(updatedGroup.acronym);
+            expect(returnedGroup.restrictedAttr).to.not.exist;
+
+            done();
+
+          });
         });
       });
 
@@ -266,12 +277,17 @@ describe('Model tests', function() {
         addedGroup.save(function(err) {
           var updatedGroup = addedGroup;
 
-          updatedGroup.acronym = 'UG';
-
           supertest(app)
-          .del('/data/Group/' + addedGroup._id)
+          .del('/data/Group/' + addedGroup.id)
           .expect(202)
-          .end(done);
+          .end(function(err, res) {
+
+            Group.find(addedGroup.id, function(err, group) {
+              expect(group).to.not.exist;
+              done();
+            });
+
+          });
         });
       });
 
