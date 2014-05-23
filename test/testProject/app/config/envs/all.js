@@ -18,13 +18,7 @@ module.exports = {
   },
 
   database: {
-    enabled: true,
-    host: 'localhost',
-    port: 27017,
-    name: 'rhapsodyTests',
-    username: undefined,
-    password: undefined,
-    mongoOptions: {}
+    enabled: true
   },
   
   log: {

@@ -33,7 +33,8 @@ var User = {
 
 	options: {
 		allowREST: true,
-		middlewares: ['logged']
+		middlewares: ['logged'],
+		adapter: 'mongodb'
 	}
 };
 
