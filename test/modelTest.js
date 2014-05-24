@@ -75,6 +75,20 @@ describe('Model tests', function() {
         });
       });
 
+      it('Do not allow to insert an item if doesn\'t has required attributes', function() {
+        var MyGroup = models['MyGroup'];
+
+        var newGroup = new MyGroup({
+          name: 'Invalid Group',
+          registry: 1,
+          acronym: 'IG'
+        });
+
+        newGroup.save(function(err) {
+          expect(err).to.exist;
+        });
+      });
+
       it('Data inserted with an adapter must not be different from the inserted with other', function(done) {
         var Group = models['Group'];
         var MyGroup = models['MyGroup'];
@@ -91,7 +105,8 @@ describe('Model tests', function() {
           var newMyGroup = new MyGroup({
             name: 'Group1',
             registry: 1,
-            acronym: 'G1'
+            acronym: 'G1',
+            requiredAttribute: 'value'
           });
 
           newMyGroup.save(function(err) {

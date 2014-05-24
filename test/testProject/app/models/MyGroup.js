@@ -9,6 +9,10 @@ var MyGroup = {
     restrictedAttr: {
       type: String,
       restricted: true
+    },
+    requiredAttribute: {
+      type: String,
+      required: true
     }
   },
 
