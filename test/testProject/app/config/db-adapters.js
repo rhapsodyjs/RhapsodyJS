@@ -6,5 +6,8 @@ module.exports = {
 		database: 'jugtests',
 		username: undefined,
 		password: undefined
+	},
+	memory: {
+		lib: 'memory'
 	}
 };

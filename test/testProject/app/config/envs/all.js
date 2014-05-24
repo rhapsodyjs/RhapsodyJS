@@ -18,7 +18,8 @@ module.exports = {
   },
 
   database: {
-    enabled: true
+    enabled: true,
+    defaultAdapter: 'mongodb'
   },
   
   log: {

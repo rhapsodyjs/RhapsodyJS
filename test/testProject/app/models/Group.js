@@ -29,8 +29,7 @@ var Group = {
   },
 
   options: {
-    allowREST: true,
-    adapter: 'mongodb'
+    allowREST: true
   }
 };
 

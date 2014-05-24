@@ -20,6 +20,7 @@ describe('Model tests', function() {
         app = server.app;
 
         models['Group'] = server.requireModel('Group');
+        models['MyGroup'] = server.requireModel('MyGroup');
 
     });
 
@@ -71,6 +72,47 @@ describe('Model tests', function() {
 
         newGroup.save(function(err) {
           expect(err).to.exist;
+        });
+      });
+
+      it('Data inserted with an adapter must not be different from the inserted with other', function(done) {
+        var Group = models['Group'];
+        var MyGroup = models['MyGroup'];
+
+        var newGroup = new Group({
+          name: 'Group1',
+          registry: 1,
+          acronym: 'G1'
+        });
+
+        newGroup.save(function(err) {
+          expect(err).to.not.exist;
+
+          var newMyGroup = new MyGroup({
+            name: 'Group1',
+            registry: 1,
+            acronym: 'G1'
+          });
+
+          newMyGroup.save(function(err) {
+            expect(err).to.not.exist;
+
+            Group.find(newGroup.id, function(err, data1) {
+              expect(err).to.not.exist;
+
+              MyGroup.find(newMyGroup.id, function(err, data2) {
+                expect(err).to.not.exist;
+
+                expect(data1.acronym).to.be.equal(data2.acronym);
+
+                done();
+                
+              });
+
+            });
+
+          });
+
         });
       });
 
