@@ -30,6 +30,14 @@ var Group = {
 
   options: {
     allowREST: true
+  },
+
+  relationships: {
+    users: {
+      type: 'hasMany',
+      with: 'User',
+      foreignKey: 'groupId'
+    }
   }
 };
 

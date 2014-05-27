@@ -1,4 +1,4 @@
-var User = {
+var MWUser = {
 	attributes: {
 		name: String,
 		age: {
@@ -33,21 +33,9 @@ var User = {
 
 	options: {
 		allowREST: true,
-		middlewares: [],
+		middlewares: ['logged'],
 		adapter: 'mongodb'
-	},
-
-	relationships: {
-		group: {
-			type: 'belongsTo',
-			with: 'Group',
-			foreignKey: 'groupId'
-		},
-		classes: {
-	      type: 'hasAndBelongsToMany',
-	      with: 'Class'
-	    }
 	}
 };
 
-module.exports = User;
+module.exports = MWUser;

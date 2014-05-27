@@ -3,7 +3,7 @@ module.exports = {
 		lib: require('jugglingdb-mongodb'),
 		host: 'localhost',
 		port: 27017,
-		database: 'jugtests',
+		database: 'rhapsodyTests',
 		username: undefined,
 		password: undefined
 	},
