@@ -26,7 +26,9 @@ describe('Middlewares tests', function() {
       supertest(app)
       .get('/admin')
       .expect(302)
-      .end(done);
+      .end(function(err, res) {
+        done();  
+      });
     });
 
 
