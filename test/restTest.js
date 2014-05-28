@@ -300,6 +300,48 @@ describe('RESTful API tests', function() {
     });
   });
 
+it('Should find data from hasMany/belongsTo relation coming from the API reading some attributes', function(done) {
+  var User = models['User'],
+      Group = models['Group'];
+
+
+  var newGroup = new Group({
+    name: 'User Group',
+    registry: 1,
+    acronym: 'UG1',
+    restrictedAttr: 'I am a restricted attribute'
+  });
+
+  newGroup.save(function(err) {
+    expect(err).to.not.exist;
+
+    var newUserData = {
+      name: 'User1',
+      age: 42,
+      password: 'that is a bad password, kids, do not use it',
+    };
+
+    newGroup.users.create(newUserData, function(err, newUser) {
+      expect(err).to.not.exist;
+
+      supertest(app)
+      .get('/data/Group/' + newGroup.id + '/users?attrs=name')
+      .expect(200)
+      .end(function(err, res) {
+
+        var user = res.body[0];
+
+        expect(user.name).to.equal(newUser.name);
+        expect(user.age).to.not.exist;
+        expect(user.password).to.not.exist;
+        
+        done();
+
+      });
+    });
+  });
+});
+
   it('Should find data from hasAndBelongsToMany relation coming from the API', function(done) {
     var Class = models['Class'];
 
@@ -329,9 +371,10 @@ describe('RESTful API tests', function() {
             expect(err).to.not.exist;
             expect(students).to.exist;
 
+            expect(res.body[0].id).to.equal(students[0].id.toString());
             expect(res.body[0].name).to.equal(students[0].name);
             expect(res.body[0].age).to.equal(students[0].age);
-            expect(res.body[0].password).to.equal(students[0].password);
+            expect(res.body[0].password).to.not.exist;
 
             supertest(app)
             .get('/data/User/' + students[0].id + '/classes')
@@ -342,6 +385,7 @@ describe('RESTful API tests', function() {
                 expect(err).to.not.exist;
                 expect(classes).to.exist;
 
+                expect(res.body[0].id).to.equal(classes[0].id.toString());
                 expect(res.body[0].name).to.equal(classes[0].name);
 
                 done();
@@ -354,5 +398,62 @@ describe('RESTful API tests', function() {
       });
     });
   });
+
+it('Should find data from hasAndBelongsToMany relation coming from the API reading some attributes', function(done) {
+  var Class = models['Class'];
+
+
+  var newClass = new Class({
+    name: 'New Class'
+  });
+
+  newClass.save(function(err) {
+    expect(err).to.not.exist;
+
+    var newStudentData = {
+      name: 'User2',
+      age: 9001,
+      password: 'that is a bad password, kids, do not use it',
+    };
+
+    newClass.students.create(newStudentData, function(err, newStudent) {
+      expect(err).to.not.exist;
+
+      supertest(app)
+      .get('/data/Class/' + newClass.id + '/students?attrs=name')
+      .expect(200)
+      .end(function(err, res) {
+
+        newClass.students(function(err, students) {
+          expect(err).to.not.exist;
+          expect(students).to.exist;
+
+          expect(res.body[0].id).to.equal(students[0].id.toString());
+          expect(res.body[0].name).to.equal(students[0].name);
+          expect(res.body[0].age).to.not.exist;
+          expect(res.body[0].password).to.not.exist;
+
+          supertest(app)
+          .get('/data/User/' + students[0].id + '/classes?attrs=id')
+          .expect(200)
+          .end(function(err, res) {
+
+            newStudent.classes(function(err, classes) {
+              expect(err).to.not.exist;
+              expect(classes).to.exist;
+
+              expect(res.body[0].id).to.equal(classes[0].id.toString());
+              expect(res.body[0].name).to.not.exist;
+
+              done();
+
+            });
+          });
+
+        });
+      });
+    });
+  });
+});
 });
 
