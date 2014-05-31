@@ -1,6 +1,6 @@
 var ModelA = {
   attributes: {
-    attr: Number
+    attr: String
   },
 
   sharedMethods: {
@@ -19,7 +19,7 @@ var ModelA = {
   },
 
   relationships: {
-    users: {
+    bs: {
       type: 'hasAndBelongsToMany',
       with: 'B',
       through: 'AB'

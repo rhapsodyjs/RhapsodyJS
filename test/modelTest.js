@@ -239,52 +239,48 @@ describe('Model tests', function() {
     });
   });
 
-// it('Should find data from hasAndBelongsToMany relation using "through" option', function(done) {
-//   var A = models['A'];
+it('Should find data from hasAndBelongsToMany relation using "through" option', function(done) {
+  var A = models['A'];
 
 
-//   var newClass = new A({
-//     attr: 'New A'
-//   });
+  var newA = new A({
+    attr: 'New A'
+  });
 
-//   newClass.save(function(err) {
-//     expect(err).to.not.exist;
+  newA.save(function(err) {
+    expect(err).to.not.exist;
 
-//     var newStudentData = {
-//       name: 'User2',
-//       age: 9001,
-//       password: 'that is a bad password, kids, do not use it',
-//     };
+    var newBData = {
+      attr: 'New B'
+    };
 
-//     newClass.students.create(newStudentData, function(err, newStudent) {
-//       expect(err).to.not.exist;
+    newA.bs.create(newBData, function(err, newB) {
+      expect(err).to.not.exist;
 
-//       //If finds the student's classes
-//       newStudent.classes(function(err, classes) {
-//         expect(err).to.not.exist;
-//         expect(classes).to.exist;
+      //If finds the student's classes
+      newB.as(function(err, as) {
+        expect(err).to.not.exist;
+        expect(as).to.exist;
 
-//         expect(classes[0].id).to.eql(newClass.id);
-//         expect(classes[0].name).to.equal(newClass.name);
+        expect(as[0].id).to.eql(newA.id);
+        expect(as[0].attr).to.equal(newA.attr);
 
-//         //If find the class' students
-//         newClass.students(function(err, students) {
-//           expect(err).to.not.exist;
-//           expect(students).to.exist;
+        newA.bs(function(err, bs) {
+          expect(err).to.not.exist;
+          expect(bs).to.exist;
 
-//           expect(newStudent.name).to.equal(students[0].name);
-//           expect(newStudent.age).to.equal(students[0].age);
-//           expect(newStudent.password).to.equal(students[0].password);
+          expect(newB.id).to.eql(bs[0].id);
+          expect(newB.attr).to.equal(bs[0].attr);
 
-//           done();
-//         });
+          done();
+        });
 
-//       });
+      });
 
-//     });
+    });
 
-//   });
-// });
+  });
+});
 
 });
 
