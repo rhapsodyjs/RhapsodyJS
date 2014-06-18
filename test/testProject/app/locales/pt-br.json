@@ -1,0 +1,12 @@
+{
+	"Hello": "Olá",
+	"World": "Mundo",
+	"a framework": {
+		"1": "um framework",
+		"n": "os frameworks"
+	},
+	"test": {
+		"1": "teste",
+		"n": "testes"
+	}
+}

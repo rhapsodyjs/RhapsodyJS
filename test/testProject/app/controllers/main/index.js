@@ -60,6 +60,6 @@ var MainController = {
       });
     }
   }
-}
+};
 
 module.exports = MainController;

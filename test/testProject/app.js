@@ -6,3 +6,5 @@ var rhapsody = new Rhapsody({
 });
 
 module.exports = rhapsody;
+
+// rhapsody.open();
