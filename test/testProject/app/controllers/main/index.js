@@ -16,8 +16,7 @@ var MainController = {
           }
         });
       },
-      middlewares: ['not-logged'],
-      customRoutes: ['/signin']
+      middlewares: ['not-logged']
     },
 
     info: {

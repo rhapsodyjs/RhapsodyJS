@@ -27,6 +27,8 @@ describe('Middlewares tests', function() {
       .get('/admin')
       .expect(302)
       .end(function(err, res) {
+        expect(res.status).to.equal(302);
+
         done();  
       });
     });

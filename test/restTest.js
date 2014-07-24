@@ -42,7 +42,12 @@ describe('RESTful API tests', function() {
     supertest(app)
     .get('/data/MWUser')
     .expect(302)
-    .end(done);
+    .end(function(err, res) {
+      expect(err).to.not.exist;
+
+      expect(res.status).to.equal(302);
+      done();
+    });
   });
 
   it('The data inserted must be equal to the received via API #1 - searching one', function(done) {
@@ -60,6 +65,8 @@ describe('RESTful API tests', function() {
       .get('/data/Group/' + newGroup.id)
       .expect(200)
       .end(function(err, res) {
+
+        expect(res.status).to.equal(200);
 
         var addedGroup = JSON.parse(JSON.stringify(newGroup));
         var returnedGroup = res.body;
@@ -91,6 +98,8 @@ describe('RESTful API tests', function() {
       .get('/data/Group/')
       .expect(200)
       .end(function(err, res) {
+
+        expect(res.status).to.equal(200);
 
         var addedGroup = JSON.parse(JSON.stringify(newGroup));
         var returnedGroup = res.body[res.body.length - 1];
@@ -124,6 +133,8 @@ describe('RESTful API tests', function() {
       .expect(200)
       .end(function(err, res) {
 
+        expect(res.status).to.equal(200);
+
         var addedGroup = JSON.parse(JSON.stringify(newGroup));
         var returnedGroup = res.body;
 
@@ -156,6 +167,8 @@ describe('RESTful API tests', function() {
       .expect(200)
       .end(function(err, res) {
 
+        expect(res.status).to.equal(200);
+
         var addedGroup = JSON.parse(JSON.stringify(newGroup));
         var returnedGroup = res.body[res.body.length - 1];
 
@@ -185,6 +198,8 @@ describe('RESTful API tests', function() {
     .send(addedGroup)
     .expect(201)
     .end(function(err, res) {
+      expect(res.status).to.equal(201);
+
       expect(err).to.not.exist;
 
       var returnedGroup = res.body;
@@ -219,6 +234,8 @@ describe('RESTful API tests', function() {
       .expect(202)
       .end(function(err, res) {
 
+        expect(res.status).to.equal(202);
+
         var returnedGroup = res.body;
         expect(returnedGroup.name).to.be.equal(updatedGroup.name);
         expect(returnedGroup.registry).to.equal(updatedGroup.registry);
@@ -248,6 +265,8 @@ describe('RESTful API tests', function() {
       .del('/data/Group/' + addedGroup.id)
       .expect(202)
       .end(function(err, res) {
+
+        expect(res.status).to.equal(202);
 
         Group.find(addedGroup.id, function(err, group) {
           expect(group).to.not.exist;
@@ -286,6 +305,8 @@ describe('RESTful API tests', function() {
         .get('/data/Group/' + newGroup.id + '/users')
         .expect(200)
         .end(function(err, res) {
+
+          expect(res.status).to.equal(200);
 
           var user = res.body[0];
 
@@ -329,6 +350,8 @@ it('Should find data from hasMany/belongsTo relation coming from the API reading
       .expect(200)
       .end(function(err, res) {
 
+        expect(res.status).to.equal(200);
+
         var user = res.body[0];
 
         expect(user.name).to.equal(newUser.name);
@@ -367,6 +390,8 @@ it('Should find data from hasMany/belongsTo relation coming from the API reading
         .expect(200)
         .end(function(err, res) {
 
+          expect(res.status).to.equal(200);
+
           newClass.students(function(err, students) {
             expect(err).to.not.exist;
             expect(students).to.exist;
@@ -380,6 +405,8 @@ it('Should find data from hasMany/belongsTo relation coming from the API reading
             .get('/data/User/' + students[0].id + '/classes')
             .expect(200)
             .end(function(err, res) {
+
+              expect(res.status).to.equal(200);
 
               newStudent.classes(function(err, classes) {
                 expect(err).to.not.exist;
@@ -424,6 +451,8 @@ it('Should find data from hasAndBelongsToMany relation coming from the API readi
       .expect(200)
       .end(function(err, res) {
 
+        expect(res.status).to.equal(200);
+
         newClass.students(function(err, students) {
           expect(err).to.not.exist;
           expect(students).to.exist;
@@ -437,6 +466,8 @@ it('Should find data from hasAndBelongsToMany relation coming from the API readi
           .get('/data/User/' + students[0].id + '/classes?attrs=id')
           .expect(200)
           .end(function(err, res) {
+
+            expect(res.status).to.equal(200);
 
             newStudent.classes(function(err, classes) {
               expect(err).to.not.exist;

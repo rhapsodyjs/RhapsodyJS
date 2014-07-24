@@ -30,6 +30,8 @@ describe('RhapsodyJS HTTPS tests', function() {
       .get('/')
       .expect(200)
       .end(function(err, res) {
+        expect(res.status).to.equal(200);
+
         request({url: 'https://localhost:4243/', rejectUnauthorized : false}, function(err, secondRes, body) {
           expect(err).to.not.exist;
           expect(res.text).to.be.eql(body);
