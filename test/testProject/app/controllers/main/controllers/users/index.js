@@ -6,7 +6,7 @@ var UsersController = {
 
       var User = Rhapsody.requireModel('User');
 
-      User.find({}, function foundUsers(err, users) {
+      User.all(function foundUsers(err, users) {
 
         if(err) {
           console.log(err);
@@ -26,11 +26,9 @@ var UsersController = {
       params: [':age'],
 
       action: function(req, res) {
-        console.log(req.app.get('views'));
-
         var User = Rhapsody.requireModel('User');
 
-        User.find({age: req.params.age}, function foundUsers(err, user) {
+        User.all({ where: {age: parseInt(req.params.age)} }, function foundUsers(err, user) {
           if(err) {
             console.log(err);
           }
