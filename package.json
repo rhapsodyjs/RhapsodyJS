@@ -1,7 +1,7 @@
 {
   "name": "rhapsody",
   "description": "HMVC framework for NodeJS",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "homepage": "https://github.com/rhapsodyjs/rhapsodyjs",
   "author": {
     "name": "talyssonoc",
@@ -24,6 +24,7 @@
     "rest",
     "restful"
   ],
+  "license" : "MIT",
   "main": "./lib/rhapsody",
   "bin": {
     "rhapsody": "./lib/cli.js"
