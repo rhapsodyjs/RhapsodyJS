@@ -1,7 +1,7 @@
 {
   "name": "rhapsody",
   "description": "HMVC framework for NodeJS",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "homepage": "https://github.com/rhapsodyjs/rhapsodyjs",
   "author": {
     "name": "talyssonoc",
@@ -37,7 +37,7 @@
     "body-parser": "^1.0.1",
     "compression": "^1.0.1",
     "connect-multiparty": "^1.0.3",
-    "consolid8ion": "0.0.2",
+    "consolid8ion": "0.0.4",
     "cookie-parser": "^1.0.1",
     "cors": "^2.2.0",
     "csurf": "^1.1.0",
