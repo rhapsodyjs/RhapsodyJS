@@ -50,7 +50,7 @@ module.exports = {
     enabled: true
   },
 
-  generateClientModels: false,
+  generateClientModels: true,
 
   csrf: {
     enabled: false
