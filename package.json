@@ -24,7 +24,7 @@
     "rest",
     "restful"
   ],
-  "license" : "MIT",
+  "license": "MIT",
   "main": "./lib/rhapsody",
   "bin": {
     "rhapsody": "./lib/cli.js"
@@ -49,6 +49,7 @@
     "lodash": ">=2.4.1",
     "method-override": "^2.0.2",
     "nomnom": "^1.6.2",
+    "rhapsodyjs-backbone": "0.0.1",
     "secure-only": "^0.0.2",
     "session.socket.io": "^0.1.6",
     "socket.io": "^0.9.16",
