@@ -54,5 +54,9 @@ module.exports = {
 
   csrf: {
     enabled: false
+  },
+
+  cluster: {
+    enabled: false
   }
 };

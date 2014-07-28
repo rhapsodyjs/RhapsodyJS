@@ -24,5 +24,13 @@ module.exports = {
       res.status(code);
       res.render(path.join(__dirname, '/' + code));      
     }
+
+    //Give time to send the 500 error page
+    //and then kill the process
+    setTimeout(function() {
+      process.exit(1);
+      
+    }, 100);
+
   }
 };
