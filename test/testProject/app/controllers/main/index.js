@@ -9,6 +9,7 @@ var MainController = {
 
     login: {
       action: function(req, res, next) {
+
         res.view({
           name: 'login.hbs',
           locals: {
@@ -57,6 +58,10 @@ var MainController = {
           res.redirect('/');
         });
       });
+    },
+
+    crash: function(req, res, next) {
+      next(new Error('testing cluster !'));
     }
   }
 };
