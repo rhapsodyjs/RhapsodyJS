@@ -44,7 +44,7 @@
     "express": "4.x",
     "express-session": "^1.0.2",
     "fs-extra": "^0.10.0",
-    "jsmin": ">=1.0.1",
+    "jsmin": "^1.0.1",
     "jugglingdb": "^0.2.14",
     "lodash": ">=2.4.1",
     "method-override": "^2.0.2",
