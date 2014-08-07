@@ -50,7 +50,10 @@ module.exports = {
     enabled: true
   },
 
-  generateClientModels: true,
+  clientModels: {
+    enabled: false,
+    adapter: undefined
+  },
 
   csrf: {
     enabled: false

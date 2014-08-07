@@ -1,7 +1,7 @@
 {
   "name": "rhapsody",
   "description": "HMVC framework for NodeJS",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "homepage": "https://github.com/rhapsodyjs/rhapsodyjs",
   "author": {
     "name": "talyssonoc",
@@ -50,7 +50,7 @@
     "method-override": "^2.0.2",
     "nomnom": "^1.6.2",
     "rhapsody-cli": "latest",
-    "rhapsodyjs-backbone": "0.0.1",
+    "rhapsodyjs-backbone": "latest",
     "secure-only": "^0.0.2",
     "session.socket.io": "^0.1.6",
     "socket.io": "^0.9.16",
