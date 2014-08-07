@@ -9,7 +9,7 @@ RhapsodyJS is a HMVC framework that runs on top of Express 4, it also creates a 
 To install RhapsodyJS, you must run the command:
 
 ```sh
-    $ npm install rhapsody --global 
+    $ npm install rhapsody-cli --global 
 ```
 
 ## New app
@@ -17,21 +17,21 @@ To install RhapsodyJS, you must run the command:
 To generate a new RhapsodyJS app, you should go to the folder where your app folder will be, and then run:
 
 ```sh
-    $ rhapsody new APP_NAME
+    $ rhapsody-cli new APP_NAME
 ```
 
 Where `APP_NAME` is the name of your app
 
 This will generate the basic structure of your app
 
-So do
+Then:
 
 ```sh
-    $ cd APP_NAME
+    $ cd APP_NAME && npm install
     $ rhapsody run
 ```
 
-And then your app will be running in [localhost:4242](http://localhost:4242)
+And your app will be running in [localhost:4242](http://localhost:4242)
 
 ## Documentation
 

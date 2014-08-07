@@ -1,7 +1,7 @@
 {
   "name": "rhapsody",
   "description": "HMVC framework for NodeJS",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "homepage": "https://github.com/rhapsodyjs/rhapsodyjs",
   "author": {
     "name": "talyssonoc",
@@ -41,7 +41,7 @@
     "cookie-parser": "^1.0.1",
     "cors": "^2.2.0",
     "csurf": "^1.1.0",
-    "express": "4.x",
+    "express": "^4.8.2",
     "express-session": "^1.0.2",
     "fs-extra": "^0.10.0",
     "jsmin": "^1.0.1",
