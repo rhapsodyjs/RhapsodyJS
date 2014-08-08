@@ -52,7 +52,8 @@ module.exports = {
 
   clientModels: {
     enabled: false,
-    adapter: undefined
+    adapter: undefined/*,
+    destination: */
   },
 
   csrf: {
