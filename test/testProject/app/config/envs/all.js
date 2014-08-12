@@ -27,8 +27,9 @@ module.exports = {
     output: undefined,
     printStack: false,
     printLevel: true,
-    time: false,
-    silent: false
+    printTime: false,
+    silent: false,
+    driver: undefined
   },
 
   routes: {

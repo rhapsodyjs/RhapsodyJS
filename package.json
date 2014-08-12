@@ -1,7 +1,7 @@
 {
   "name": "rhapsody",
   "description": "HMVC framework for NodeJS",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "homepage": "https://github.com/rhapsodyjs/rhapsodyjs",
   "author": {
     "name": "talyssonoc",
@@ -54,7 +54,7 @@
     "secure-only": "^0.0.2",
     "session.socket.io": "^0.1.6",
     "socket.io": "^0.9.16",
-    "wolverine": "^0.0.8"
+    "wolverine": "^0.1.1"
   },
   "devDependencies": {
     "mocha": "^1.18.0",
