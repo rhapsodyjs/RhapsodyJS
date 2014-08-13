@@ -1,5 +1,5 @@
 module.exports = {
   log: {
-    time: true
+    printTime: true
   }
 };
