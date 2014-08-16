@@ -22,7 +22,9 @@ module.exports = {
     }
     else {
       res.status(code);
-      res.render(path.join(__dirname, '/' + code));      
+      res.render(path.join(__dirname, '/' + code), {
+        error: err
+      });      
     }
 
     //Give time to send the 500 error page
