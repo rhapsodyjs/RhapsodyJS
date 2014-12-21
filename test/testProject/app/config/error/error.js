@@ -15,7 +15,7 @@ module.exports = {
 
   error500Handler: function(err, req, res, next) {
     Rhapsody.log.error(err);
-
+    
     var code = 500;
     if(req.xhr) {
       res.send(code, http.STATUS_CODES[code]);
@@ -23,7 +23,8 @@ module.exports = {
     else {
       res.status(code);
       res.render(path.join(__dirname, '/' + code), {
-        error: err
+        error: err.toString(),
+        stack: err.stack.split('\n').slice(1)
       });      
     }
 
@@ -33,6 +34,5 @@ module.exports = {
       process.exit(1);
       
     }, 100);
-
   }
 };
