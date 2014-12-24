@@ -17,6 +17,12 @@ module.exports = function (grunt) {
             ui: 'bdd',
             reporter: 'spec'
         }
+    },
+    jshint: {
+      all: ['lib/**/*.js'],
+      options: {
+        jshintrc: '.jshintrc'
+      }
     }
   });
 
