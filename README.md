@@ -28,7 +28,7 @@ Then:
 
 ```sh
     $ cd APP_NAME && npm install
-    $ rhapsody run
+    $ rhapsody-cli run
 ```
 
 And your app will be running in [localhost:4242](http://localhost:4242)
