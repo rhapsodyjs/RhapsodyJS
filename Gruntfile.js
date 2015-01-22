@@ -8,14 +8,16 @@ module.exports = function (grunt) {
 
 	// Project configuration.
 	grunt.initConfig({
-		mochacli: {
-			src: ['test/*.js'],
-			options: {
-				globals: ['chai'],
-				timeout: 6000,
-				ignoreLeaks: false,
-				ui: 'bdd',
-				reporter: 'spec'
+		mochaTest: {
+			test: {
+				src: ['test/*.js'],
+				options: {
+					globals: ['chai'],
+					timeout: 6000,
+					ignoreLeaks: false,
+					ui: 'bdd',
+					reporter: 'spec'
+				}
 			}
 		},
 		jshint: {
@@ -33,6 +35,6 @@ module.exports = function (grunt) {
 	});
 
 	// Default task.
-	grunt.registerTask('test', ['mochacli']);
+	grunt.registerTask('test', ['mochaTest']);
 
 };
